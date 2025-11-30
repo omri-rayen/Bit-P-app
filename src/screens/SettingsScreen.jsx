@@ -6,16 +6,19 @@ import SystemMode from '../components/systemMode';
 import SystemNameEditor from '../components/SystemNameEditor';
 import DeviceNameEditor from '../components/DeviceNameEditor';
 import LanguageSelector from '../components/LanguageSelector';
+import ThemeToggle from '../components/ThemeToggle';
 import useSystemMode from '../hooks/useSystemMode';
 import { useLanguage } from '../i18n/LanguageContext';
+import { useTheme } from '../theme/ThemeContext';
 import Header from '../components/Header';
 import GradientBackground from '../components/GradientBackground';
 import GlassCard from '../components/GlassCard';
-import { colors, typography, spacing } from '../theme/colors';
+import { typography, spacing } from '../theme/colors';
 
 export default function SettingsScreen () {
     const { isArmed, loading, error } = useSystemMode();
     const { t } = useLanguage();
+    const { theme } = useTheme();
     const insets = useSafeAreaInsets();
 
     return (
@@ -36,8 +39,8 @@ export default function SettingsScreen () {
                 
                 <View style={styles.content}>
                     {error && (
-                        <GlassCard style={styles.errorCard}>
-                            <Text style={styles.errorText}>{t('common.error')}: {error}</Text>
+                        <GlassCard style={[styles.errorCard, { borderColor: 'rgba(239, 68, 68, 0.3)' }]}>
+                            <Text style={[styles.errorText, { color: theme.status.error }]}>{t('common.error')}: {error}</Text>
                         </GlassCard>
                     )}
                     
@@ -52,6 +55,11 @@ export default function SettingsScreen () {
                     {/* Éditeur des noms d'appareils */}
                     <DeviceNameEditor />
                     
+                    {/* Thème */}
+                    <View style={styles.sectionSpacing}>
+                        <ThemeToggle />
+                    </View>
+                    
                     {/* Sélecteur de langue */}
                     <View style={styles.sectionSpacing}>
                         <LanguageSelector />
@@ -59,8 +67,8 @@ export default function SettingsScreen () {
                     
                     {/* Version de l'application - tout en bas */}
                     <View style={styles.versionContainer}>
-                        <Text style={styles.versionText}>Bit-P App</Text>
-                        <Text style={styles.versionNumber}>v1.0.0</Text>
+                        <Text style={[styles.versionText, { color: theme.text.muted }]}>Bit-P App</Text>
+                        <Text style={[styles.versionNumber, { color: theme.text.muted }]}>v1.0.0</Text>
                     </View>
                 </View>
             </ScrollView>
@@ -82,13 +90,11 @@ const styles = StyleSheet.create({
         marginTop: spacing.xl,
     },
     errorCard: {
-        backgroundColor: colors.status.errorBg,
-        borderColor: 'rgba(239, 68, 68, 0.3)',
+        backgroundColor: 'rgba(239, 68, 68, 0.1)',
         marginBottom: spacing.md,
     },
     errorText: {
         ...typography.caption,
-        color: colors.status.error,
     },
     versionContainer: {
         alignItems: 'center',
@@ -97,12 +103,10 @@ const styles = StyleSheet.create({
     },
     versionText: {
         ...typography.caption,
-        color: colors.text.muted,
         marginBottom: spacing.xs,
     },
     versionNumber: {
         ...typography.small,
-        color: colors.text.muted,
         opacity: 0.6,
     },
 });

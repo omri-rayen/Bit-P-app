@@ -6,7 +6,8 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import GlassCard from './GlassCard';
 import useMQTT from '../hooks/useMQTT';
 import { useLanguage } from '../i18n/LanguageContext';
-import { colors, typography, spacing, borderRadius, shadows } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
+import { typography, spacing, borderRadius } from '../theme/colors';
 
 const MQTT_TOPIC_SET_MODE = 'system/cmd/setMode';
 
@@ -15,6 +16,7 @@ export default function SystemMode({ initialIsArmed = true }) {
   const [pulseAnim] = useState(new Animated.Value(1));
   const { isConnected, publish } = useMQTT();
   const { t } = useLanguage();
+  const { theme } = useTheme();
 
   useEffect(() => {
     setIsArmed(Boolean(initialIsArmed));
@@ -64,11 +66,14 @@ export default function SystemMode({ initialIsArmed = true }) {
         <Ionicons 
           name="shield-checkmark" 
           size={20} 
-          color={colors.text.secondary} 
+          color={theme.text.secondary} 
         />
-        <Text style={styles.headerTitle}>{t('mode.title')}</Text>
+        <Text style={[styles.headerTitle, { color: theme.text.secondary }]}>{t('mode.title')}</Text>
         {/* Indicateur de connexion MQTT */}
-        <View style={[styles.mqttIndicator, isConnected ? styles.mqttConnected : styles.mqttDisconnected]} />
+        <View style={[
+          styles.mqttIndicator, 
+          { backgroundColor: isConnected ? theme.status.success : theme.status.error }
+        ]} />
       </View>
 
       {/* Status Display */}
@@ -76,12 +81,17 @@ export default function SystemMode({ initialIsArmed = true }) {
         <Animated.View 
           style={[
             styles.statusCircle,
-            isArmed ? styles.armedCircle : styles.disarmedCircle,
+            { 
+              shadowColor: isArmed ? theme.status.success : theme.status.error,
+              shadowOffset: { width: 0, height: 0 },
+              shadowOpacity: 0.5,
+              shadowRadius: 20,
+            },
             { transform: [{ scale: pulseAnim }] }
           ]}
         >
           <LinearGradient
-            colors={isArmed ? colors.gradients.accent : [colors.status.error, '#B91C1C']}
+            colors={isArmed ? theme.gradients.accent : [theme.status.error, '#B91C1C']}
             style={styles.statusGradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
@@ -89,15 +99,15 @@ export default function SystemMode({ initialIsArmed = true }) {
             <Ionicons 
               name={isArmed ? 'shield-checkmark' : 'shield-outline'} 
               size={48} 
-              color={colors.text.primary} 
+              color={theme.text.primary} 
             />
           </LinearGradient>
         </Animated.View>
         
-        <Text style={[styles.statusText, isArmed ? styles.armedText : styles.disarmedText]}>
+        <Text style={[styles.statusText, { color: isArmed ? theme.status.success : theme.status.error }]}>
           {isArmed ? t('mode.armed') : t('mode.disarmed')}
         </Text>
-        <Text style={styles.statusDescription}>
+        <Text style={[styles.statusDescription, { color: theme.text.muted }]}>
           {isArmed 
             ? t('mode.armedDesc') 
             : t('mode.disarmedDesc')}
@@ -107,41 +117,47 @@ export default function SystemMode({ initialIsArmed = true }) {
       {/* Toggle Buttons */}
       <View style={styles.toggleContainer}>
         <TouchableOpacity
-          style={[styles.toggleButton, !isArmed && styles.activeButton]}
+          style={styles.toggleButton}
           onPress={() => setMode(false)}
           activeOpacity={0.7}
         >
-          <View style={[styles.buttonInner, !isArmed && styles.disarmedButtonActive]}>
+          <View style={[
+            styles.buttonInner, 
+            { 
+              backgroundColor: !isArmed ? theme.status.error : theme.background.tertiary,
+              borderColor: !isArmed ? theme.status.error : theme.border.primary,
+            }
+          ]}>
             <Ionicons 
               name="lock-open-outline" 
               size={20} 
-              color={!isArmed ? colors.text.primary : colors.text.muted} 
+              color={!isArmed ? theme.text.primary : theme.text.muted} 
             />
-            <Text style={[styles.buttonText, !isArmed && styles.activeButtonText]}>
+            <Text style={[styles.buttonText, { color: !isArmed ? theme.text.primary : theme.text.muted }]}>
               {t('mode.disarm')}
             </Text>
           </View>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.toggleButton, isArmed && styles.activeButton]}
+          style={styles.toggleButton}
           onPress={() => setMode(true)}
           activeOpacity={0.7}
         >
           {isArmed ? (
             <LinearGradient
-              colors={colors.gradients.accent}
+              colors={theme.gradients.accent}
               style={styles.buttonInner}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
             >
-              <Ionicons name="lock-closed" size={20} color={colors.text.primary} />
-              <Text style={[styles.buttonText, styles.activeButtonText]}>{t('mode.arm')}</Text>
+              <Ionicons name="lock-closed" size={20} color={theme.text.primary} />
+              <Text style={[styles.buttonText, { color: theme.text.primary }]}>{t('mode.arm')}</Text>
             </LinearGradient>
           ) : (
-            <View style={styles.buttonInner}>
-              <Ionicons name="lock-closed-outline" size={20} color={colors.text.muted} />
-              <Text style={styles.buttonText}>{t('mode.arm')}</Text>
+            <View style={[styles.buttonInner, { backgroundColor: theme.background.tertiary, borderColor: theme.border.primary }]}>
+              <Ionicons name="lock-closed-outline" size={20} color={theme.text.muted} />
+              <Text style={[styles.buttonText, { color: theme.text.muted }]}>{t('mode.arm')}</Text>
             </View>
           )}
         </TouchableOpacity>
@@ -161,7 +177,6 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     ...typography.small,
-    color: colors.text.secondary,
     letterSpacing: 2,
     fontWeight: '600',
     marginLeft: spacing.sm,
@@ -172,28 +187,12 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
   },
-  mqttConnected: {
-    backgroundColor: colors.status.success,
-    ...shadows.glow,
-    shadowColor: colors.status.success,
-  },
-  mqttDisconnected: {
-    backgroundColor: colors.status.error,
-  },
   statusContainer: {
     alignItems: 'center',
     marginBottom: spacing.xl,
   },
   statusCircle: {
     marginBottom: spacing.lg,
-  },
-  armedCircle: {
-    ...shadows.glow,
-    shadowColor: colors.status.success,
-  },
-  disarmedCircle: {
-    ...shadows.glow,
-    shadowColor: colors.status.error,
   },
   statusGradient: {
     width: 120,
@@ -207,15 +206,8 @@ const styles = StyleSheet.create({
     letterSpacing: 4,
     marginBottom: spacing.sm,
   },
-  armedText: {
-    color: colors.status.success,
-  },
-  disarmedText: {
-    color: colors.status.error,
-  },
   statusDescription: {
     ...typography.caption,
-    color: colors.text.muted,
     textAlign: 'center',
     paddingHorizontal: spacing.lg,
   },
@@ -234,22 +226,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
-    backgroundColor: colors.background.tertiary,
     borderRadius: borderRadius.md,
     borderWidth: 1,
-    borderColor: colors.border.primary,
-  },
-  disarmedButtonActive: {
-    backgroundColor: colors.status.error,
-    borderColor: colors.status.error,
   },
   buttonText: {
     ...typography.body,
-    color: colors.text.muted,
     fontWeight: '600',
     marginLeft: spacing.sm,
-  },
-  activeButtonText: {
-    color: colors.text.primary,
   },
 });

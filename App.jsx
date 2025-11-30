@@ -10,14 +10,14 @@ import HomeScreen from './src/screens/HomeScreen';
 import SystemScreen from './src/screens/SystemScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import { LanguageProvider, useLanguage } from './src/i18n/LanguageContext';
-import { colors, borderRadius, shadows, typography, spacing } from './src/theme/colors';
+import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 
-function TabBarIcon({ name, color, focused }) {
+function TabBarIcon({ name, color, focused, gradientColors }) {
   return (
     <View style={styles.iconContainer}>
       {focused && (
         <LinearGradient
-          colors={colors.gradients.primary}
+          colors={gradientColors}
           style={styles.activeIndicator}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
@@ -30,6 +30,7 @@ function TabBarIcon({ name, color, focused }) {
 
 function CustomTabBar({ currentPage, onTabPress, t }) {
   const insets = useSafeAreaInsets();
+  const { theme } = useTheme();
   
   const tabs = [
     { key: 'home', label: t('nav.home'), icon: 'home', iconOutline: 'home-outline' },
@@ -38,11 +39,18 @@ function CustomTabBar({ currentPage, onTabPress, t }) {
   ];
 
   return (
-    <View style={[styles.tabBar, { paddingBottom: insets.bottom > 0 ? insets.bottom : 12 }]}>
+    <View style={[
+      styles.tabBar, 
+      { 
+        paddingBottom: insets.bottom > 0 ? insets.bottom : 12,
+        backgroundColor: theme.tabBar.background,
+        borderTopColor: theme.border.primary,
+      }
+    ]}>
       {tabs.map((tab, index) => {
         const isFocused = currentPage === index;
         const iconName = isFocused ? tab.icon : tab.iconOutline;
-        const color = isFocused ? colors.tabBar.active : colors.tabBar.inactive;
+        const color = isFocused ? theme.tabBar.active : theme.tabBar.inactive;
         
         return (
           <TouchableOpacity
@@ -51,7 +59,12 @@ function CustomTabBar({ currentPage, onTabPress, t }) {
             onPress={() => onTabPress(index)}
             activeOpacity={0.7}
           >
-            <TabBarIcon name={iconName} color={color} focused={isFocused} />
+            <TabBarIcon 
+              name={iconName} 
+              color={color} 
+              focused={isFocused} 
+              gradientColors={theme.gradients.primary}
+            />
             <Text style={[styles.tabBarLabel, { color }]}>{tab.label}</Text>
           </TouchableOpacity>
         );
@@ -62,6 +75,7 @@ function CustomTabBar({ currentPage, onTabPress, t }) {
 
 function AppNavigator() {
   const { t } = useLanguage();
+  const { theme } = useTheme();
   const pagerRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -74,7 +88,7 @@ function AppNavigator() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background.primary }]}>
       <PagerView
         ref={pagerRef}
         style={styles.pagerView}
@@ -103,20 +117,21 @@ function AppNavigator() {
 
 export default function App() {
   return (
-    <LanguageProvider>
-      <SafeAreaProvider>
-        <NavigationContainer>
-          <AppNavigator />
-        </NavigationContainer>
-      </SafeAreaProvider>
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <SafeAreaProvider>
+          <NavigationContainer>
+            <AppNavigator />
+          </NavigationContainer>
+        </SafeAreaProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.primary,
   },
   pagerView: {
     flex: 1,
@@ -126,11 +141,13 @@ const styles = StyleSheet.create({
   },
   tabBar: {
     flexDirection: 'row',
-    backgroundColor: colors.tabBar.background,
     borderTopWidth: 1,
-    borderTopColor: colors.border.primary,
     paddingTop: 8,
-    ...shadows.subtle,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 8,
   },
   tabBarLabel: {
     fontSize: 11,

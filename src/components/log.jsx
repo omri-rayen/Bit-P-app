@@ -2,31 +2,33 @@ import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { colors, typography, spacing, borderRadius, shadows } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
+import { typography, spacing, borderRadius } from '../theme/colors';
 
 export default function Log({ origin, msg, dName, timestamp }) {
+  const { theme } = useTheme();
   const isSystem = origin === 'system';
   const isDevice = origin === 'device';
 
   const config = {
     system: {
       icon: 'server-outline',
-      gradient: colors.gradients.accent,
-      accentColor: colors.status.success,
-      bgColor: colors.status.successBg,
+      gradient: theme.gradients.accent,
+      accentColor: theme.status.success,
+      bgColor: theme.status.successBg,
       label: 'SYSTÈME',
     },
     device: {
       icon: 'hardware-chip-outline',
-      gradient: colors.gradients.primary,
-      accentColor: colors.status.info,
-      bgColor: colors.status.infoBg,
+      gradient: theme.gradients.primary,
+      accentColor: theme.status.info,
+      bgColor: theme.status.infoBg,
       label: 'APPAREIL',
     },
     default: {
       icon: 'document-text-outline',
-      gradient: colors.gradients.secondary,
-      accentColor: colors.text.muted,
+      gradient: theme.gradients.secondary,
+      accentColor: theme.text.muted,
       bgColor: 'rgba(107, 114, 128, 0.15)',
       label: 'LOG',
     },
@@ -54,7 +56,7 @@ export default function Log({ origin, msg, dName, timestamp }) {
   })();
 
   return (
-    <View style={styles.wrapper}>
+    <View style={[styles.wrapper, { backgroundColor: theme.background.card, borderColor: theme.border.secondary }]}>
       {/* Accent line on the left */}
       <LinearGradient
         colors={currentConfig.gradient}
@@ -76,17 +78,17 @@ export default function Log({ origin, msg, dName, timestamp }) {
               {currentConfig.label}
             </Text>
           </View>
-          <Text style={styles.timestamp}>{formattedTime}</Text>
+          <Text style={[styles.timestamp, { color: theme.text.muted }]}>{formattedTime}</Text>
         </View>
 
         {/* Message */}
-        <Text style={styles.msg} numberOfLines={0}>{msg}</Text>
+        <Text style={[styles.msg, { color: theme.text.primary }]} numberOfLines={0}>{msg}</Text>
 
         {/* Device name if available */}
         {dName && (
           <View style={styles.deviceRow}>
-            <Ionicons name="link-outline" size={14} color={colors.text.muted} />
-            <Text style={styles.dname}>{dName}</Text>
+            <Ionicons name="link-outline" size={14} color={theme.text.muted} />
+            <Text style={[styles.dname, { color: theme.text.secondary }]}>{dName}</Text>
           </View>
         )}
       </View>
@@ -97,13 +99,15 @@ export default function Log({ origin, msg, dName, timestamp }) {
 const styles = StyleSheet.create({
   wrapper: {
     flexDirection: 'row',
-    backgroundColor: colors.background.card,
     borderRadius: borderRadius.md,
     marginBottom: spacing.md,
     borderWidth: 1,
-    borderColor: colors.border.secondary,
     overflow: 'hidden',
-    ...shadows.subtle,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   accentLine: {
     width: 4,
@@ -133,11 +137,9 @@ const styles = StyleSheet.create({
   },
   timestamp: {
     ...typography.small,
-    color: colors.text.muted,
   },
   msg: {
     ...typography.body,
-    color: colors.text.primary,
     lineHeight: 22,
     marginBottom: spacing.sm,
   },
@@ -148,7 +150,6 @@ const styles = StyleSheet.create({
   },
   dname: {
     ...typography.caption,
-    color: colors.text.secondary,
     marginLeft: spacing.xs,
   },
 });

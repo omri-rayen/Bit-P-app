@@ -12,11 +12,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import GlassCard from './GlassCard';
 import { useLanguage } from '../i18n/LanguageContext';
+import { useTheme } from '../theme/ThemeContext';
 import { languageNames, languageFlags } from '../i18n/translations';
-import { colors, typography, spacing, borderRadius, shadows } from '../theme/colors';
+import { typography, spacing, borderRadius } from '../theme/colors';
 
 export default function LanguageSelector() {
   const { language, setLanguage, t, availableLanguages } = useLanguage();
+  const { theme } = useTheme();
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleSelectLanguage = (lang) => {
@@ -36,23 +38,23 @@ export default function LanguageSelector() {
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
             >
-              <Ionicons name="language-outline" size={20} color={colors.text.primary} />
+              <Ionicons name="language-outline" size={20} color={theme.text.primary} />
             </LinearGradient>
           </View>
-          <Text style={styles.headerTitle}>{t('settings.language')}</Text>
+          <Text style={[styles.headerTitle, { color: theme.text.secondary }]}>{t('settings.language')}</Text>
         </View>
 
         {/* Sélecteur de langue */}
         <TouchableOpacity 
-          style={styles.selector}
+          style={[styles.selector, { backgroundColor: theme.background.glass, borderColor: theme.border.primary }]}
           onPress={() => setModalVisible(true)}
           activeOpacity={0.7}
         >
           <View style={styles.selectedLanguage}>
             <Text style={styles.flag}>{languageFlags[language]}</Text>
-            <Text style={styles.languageName}>{languageNames[language]}</Text>
+            <Text style={[styles.languageName, { color: theme.text.primary }]}>{languageNames[language]}</Text>
           </View>
-          <Ionicons name="chevron-forward" size={20} color={colors.text.muted} />
+          <Ionicons name="chevron-forward" size={20} color={theme.text.muted} />
         </TouchableOpacity>
       </GlassCard>
 
@@ -67,14 +69,14 @@ export default function LanguageSelector() {
           style={styles.modalOverlay}
           onPress={() => setModalVisible(false)}
         >
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{t('settings.selectLanguage')}</Text>
+          <View style={[styles.modalContent, { backgroundColor: theme.background.secondary, borderColor: theme.border.primary }]}>
+            <View style={[styles.modalHeader, { borderBottomColor: theme.border.secondary }]}>
+              <Text style={[styles.modalTitle, { color: theme.text.primary }]}>{t('settings.selectLanguage')}</Text>
               <TouchableOpacity 
                 onPress={() => setModalVisible(false)}
                 style={styles.closeButton}
               >
-                <Ionicons name="close" size={24} color={colors.text.secondary} />
+                <Ionicons name="close" size={24} color={theme.text.secondary} />
               </TouchableOpacity>
             </View>
 
@@ -84,7 +86,8 @@ export default function LanguageSelector() {
                   key={lang}
                   style={[
                     styles.languageOption,
-                    language === lang && styles.selectedOption
+                    { backgroundColor: theme.background.glass, borderColor: theme.border.secondary },
+                    language === lang && { borderColor: theme.primary, backgroundColor: 'rgba(0, 217, 255, 0.1)' }
                   ]}
                   onPress={() => handleSelectLanguage(lang)}
                   activeOpacity={0.7}
@@ -93,7 +96,8 @@ export default function LanguageSelector() {
                     <Text style={styles.optionFlag}>{languageFlags[lang]}</Text>
                     <Text style={[
                       styles.optionName,
-                      language === lang && styles.selectedOptionText
+                      { color: theme.text.primary },
+                      language === lang && { color: theme.primary, fontWeight: '600' }
                     ]}>
                       {languageNames[lang]}
                     </Text>
@@ -101,12 +105,12 @@ export default function LanguageSelector() {
                   
                   {language === lang && (
                     <LinearGradient
-                      colors={colors.gradients.primary}
+                      colors={theme.gradients.primary}
                       style={styles.checkmark}
                       start={{ x: 0, y: 0 }}
                       end={{ x: 1, y: 1 }}
                     >
-                      <Ionicons name="checkmark" size={16} color={colors.text.primary} />
+                      <Ionicons name="checkmark" size={16} color={theme.text.primary} />
                     </LinearGradient>
                   )}
                 </TouchableOpacity>
@@ -138,11 +142,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    ...shadows.subtle,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   headerTitle: {
     ...typography.small,
-    color: colors.text.secondary,
     letterSpacing: 2,
     fontWeight: '600',
   },
@@ -150,11 +157,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: colors.background.glass,
     borderRadius: borderRadius.md,
     padding: spacing.md,
     borderWidth: 1,
-    borderColor: colors.border.primary,
   },
   selectedLanguage: {
     flexDirection: 'row',
@@ -166,7 +171,6 @@ const styles = StyleSheet.create({
   },
   languageName: {
     ...typography.body,
-    color: colors.text.primary,
     fontWeight: '600',
   },
   
@@ -181,10 +185,8 @@ const styles = StyleSheet.create({
   modalContent: {
     width: '100%',
     maxWidth: 340,
-    backgroundColor: colors.background.secondary,
     borderRadius: borderRadius.xl,
     borderWidth: 1,
-    borderColor: colors.border.primary,
     overflow: 'hidden',
   },
   modalHeader: {
@@ -193,11 +195,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: spacing.lg,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border.secondary,
   },
   modalTitle: {
     ...typography.h3,
-    color: colors.text.primary,
   },
   closeButton: {
     padding: spacing.xs,
@@ -212,13 +212,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderRadius: borderRadius.md,
     marginBottom: spacing.sm,
-    backgroundColor: colors.background.glass,
     borderWidth: 1,
-    borderColor: colors.border.secondary,
-  },
-  selectedOption: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(0, 217, 255, 0.1)',
   },
   languageInfo: {
     flexDirection: 'row',
@@ -230,11 +224,6 @@ const styles = StyleSheet.create({
   },
   optionName: {
     ...typography.body,
-    color: colors.text.primary,
-  },
-  selectedOptionText: {
-    color: colors.primary,
-    fontWeight: '600',
   },
   checkmark: {
     width: 28,

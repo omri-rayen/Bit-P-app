@@ -15,12 +15,13 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import GlassCard from './GlassCard';
 import useDevices from '../hooks/useDevices';
 import { useLanguage } from '../i18n/LanguageContext';
-import { colors, typography, spacing, borderRadius, shadows } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
+import { typography, spacing, borderRadius } from '../theme/colors';
 
 const API_URL = 'https://bit-p-server.up.railway.app/api/dName';
 
 // Configuration des icônes par type d'appareil
-const getDeviceConfig = (t) => ({
+const getDeviceConfig = (t, theme) => ({
   windowSensor: {
     icon: 'apps-outline',
     label: t('devices.windowSensor'),
@@ -44,17 +45,17 @@ const getDeviceConfig = (t) => ({
   default: {
     icon: 'hardware-chip-outline',
     label: t('devices.device'),
-    gradient: colors.gradients.secondary,
+    gradient: theme.gradients.secondary,
   },
 });
 
-function DeviceEditItem({ device, onRename, t }) {
+function DeviceEditItem({ device, onRename, t, theme }) {
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState(device.dName);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
-  const deviceConfig = getDeviceConfig(t);
+  const deviceConfig = getDeviceConfig(t, theme);
   const config = deviceConfig[device.dType] || deviceConfig.default;
 
   const handleSave = async () => {
@@ -104,6 +105,8 @@ function DeviceEditItem({ device, onRename, t }) {
     Keyboard.dismiss();
   };
 
+  const styles = getStyles(theme);
+
   return (
     <View style={styles.deviceItem}>
       <View style={styles.deviceHeader}>
@@ -113,7 +116,7 @@ function DeviceEditItem({ device, onRename, t }) {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
-          <Ionicons name={config.icon} size={18} color={colors.text.primary} />
+          <Ionicons name={config.icon} size={18} color="#FFFFFF" />
         </LinearGradient>
         
         <View style={styles.deviceInfo}>
@@ -128,7 +131,7 @@ function DeviceEditItem({ device, onRename, t }) {
             style={styles.editButton}
             onPress={() => setIsEditing(true)}
           >
-            <Ionicons name="create-outline" size={18} color={colors.primary} />
+            <Ionicons name="create-outline" size={18} color={theme.primary} />
           </TouchableOpacity>
         )}
       </View>
@@ -140,7 +143,7 @@ function DeviceEditItem({ device, onRename, t }) {
             value={newName}
             onChangeText={setNewName}
             placeholder={t('settings.newName')}
-            placeholderTextColor={colors.text.muted}
+            placeholderTextColor={theme.text.muted}
             autoFocus
             selectTextOnFocus
             maxLength={30}
@@ -152,7 +155,7 @@ function DeviceEditItem({ device, onRename, t }) {
               onPress={handleCancel}
               disabled={saving}
             >
-              <Ionicons name="close" size={16} color={colors.text.muted} />
+              <Ionicons name="close" size={16} color={theme.text.muted} />
             </TouchableOpacity>
 
             <TouchableOpacity 
@@ -161,15 +164,15 @@ function DeviceEditItem({ device, onRename, t }) {
               activeOpacity={0.8}
             >
               <LinearGradient
-                colors={colors.gradients.primary}
+                colors={theme.gradients.primary}
                 style={styles.saveButton}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
               >
                 {saving ? (
-                  <ActivityIndicator size="small" color={colors.text.primary} />
+                  <ActivityIndicator size="small" color="#FFFFFF" />
                 ) : (
-                  <Ionicons name="checkmark" size={16} color={colors.text.primary} />
+                  <Ionicons name="checkmark" size={16} color="#FFFFFF" />
                 )}
               </LinearGradient>
             </TouchableOpacity>
@@ -189,7 +192,10 @@ function DeviceEditItem({ device, onRename, t }) {
 export default function DeviceNameEditor() {
   const { devices, loading, error, refresh } = useDevices();
   const { t } = useLanguage();
+  const { theme } = useTheme();
   const [successMessage, setSuccessMessage] = useState(null);
+  
+  const styles = getStyles(theme);
 
   const handleRename = () => {
     refresh();
@@ -203,12 +209,12 @@ export default function DeviceNameEditor() {
       <View style={styles.header}>
         <View style={styles.iconWrapper}>
           <LinearGradient
-            colors={colors.gradients.secondary}
+            colors={theme.gradients.secondary}
             style={styles.iconGradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
           >
-            <Ionicons name="hardware-chip-outline" size={20} color={colors.text.primary} />
+            <Ionicons name="hardware-chip-outline" size={20} color="#FFFFFF" />
           </LinearGradient>
         </View>
         <View style={styles.headerTextContainer}>
@@ -222,12 +228,12 @@ export default function DeviceNameEditor() {
       {/* Contenu */}
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="small" color={colors.primary} />
+          <ActivityIndicator size="small" color={theme.primary} />
           <Text style={styles.loadingText}>{t('common.loading')}</Text>
         </View>
       ) : error ? (
         <View style={styles.errorBanner}>
-          <Ionicons name="alert-circle" size={16} color={colors.status.error} />
+          <Ionicons name="alert-circle" size={16} color={theme.status.error} />
           <Text style={styles.errorBannerText}>{error}</Text>
         </View>
       ) : devices && devices.length > 0 ? (
@@ -238,12 +244,13 @@ export default function DeviceNameEditor() {
               device={device} 
               onRename={handleRename}
               t={t}
+              theme={theme}
             />
           ))}
         </View>
       ) : (
         <View style={styles.emptyContainer}>
-          <Ionicons name="cube-outline" size={32} color={colors.text.muted} />
+          <Ionicons name="cube-outline" size={32} color={theme.text.muted} />
           <Text style={styles.emptyText}>{t('devices.noDevices')}</Text>
         </View>
       )}
@@ -251,7 +258,7 @@ export default function DeviceNameEditor() {
       {/* Message de succès */}
       {successMessage && (
         <View style={styles.successContainer}>
-          <Ionicons name="checkmark-circle" size={16} color={colors.status.success} />
+          <Ionicons name="checkmark-circle" size={16} color={theme.status.success} />
           <Text style={styles.successText}>{successMessage}</Text>
         </View>
       )}
@@ -259,7 +266,7 @@ export default function DeviceNameEditor() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme) => StyleSheet.create({
   container: {
     width: '100%',
     marginBottom: spacing.md,
@@ -278,20 +285,19 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    ...shadows.subtle,
   },
   headerTextContainer: {
     flex: 1,
   },
   headerTitle: {
     ...typography.small,
-    color: colors.text.secondary,
+    color: theme.text.secondary,
     letterSpacing: 2,
     fontWeight: '600',
   },
   deviceCount: {
     ...typography.small,
-    color: colors.primary,
+    color: theme.primary,
     marginTop: 2,
   },
   loadingContainer: {
@@ -302,19 +308,19 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     ...typography.caption,
-    color: colors.text.muted,
+    color: theme.text.muted,
     marginLeft: spacing.sm,
   },
   devicesList: {
     width: '100%',
   },
   deviceItem: {
-    backgroundColor: colors.background.glass,
+    backgroundColor: theme.background.glass,
     borderRadius: borderRadius.md,
     padding: spacing.md,
     marginBottom: spacing.sm,
     borderWidth: 1,
-    borderColor: colors.border.secondary,
+    borderColor: theme.border.secondary,
   },
   deviceHeader: {
     flexDirection: 'row',
@@ -333,16 +339,16 @@ const styles = StyleSheet.create({
   },
   deviceType: {
     ...typography.small,
-    color: colors.text.muted,
+    color: theme.text.muted,
   },
   deviceName: {
     ...typography.body,
-    color: colors.text.primary,
+    color: theme.text.primary,
     fontWeight: '600',
     marginTop: 2,
   },
   editButton: {
-    backgroundColor: colors.background.tertiary,
+    backgroundColor: theme.background.tertiary,
     padding: spacing.sm,
     borderRadius: borderRadius.sm,
   },
@@ -350,15 +356,15 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     paddingTop: spacing.md,
     borderTopWidth: 1,
-    borderTopColor: colors.border.secondary,
+    borderTopColor: theme.border.secondary,
   },
   input: {
-    backgroundColor: colors.background.tertiary,
+    backgroundColor: theme.background.tertiary,
     borderRadius: borderRadius.md,
     padding: spacing.md,
     borderWidth: 1,
-    borderColor: colors.border.accent,
-    color: colors.text.primary,
+    borderColor: theme.border.accent,
+    color: theme.text.primary,
     ...typography.body,
     marginBottom: spacing.sm,
   },
@@ -373,9 +379,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: borderRadius.sm,
-    backgroundColor: colors.background.tertiary,
+    backgroundColor: theme.background.tertiary,
     borderWidth: 1,
-    borderColor: colors.border.primary,
+    borderColor: theme.border.primary,
   },
   saveButton: {
     width: 36,
@@ -389,18 +395,18 @@ const styles = StyleSheet.create({
   },
   errorText: {
     ...typography.small,
-    color: colors.status.error,
+    color: theme.status.error,
   },
   errorBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.status.errorBg,
+    backgroundColor: theme.status.errorBg,
     padding: spacing.md,
     borderRadius: borderRadius.sm,
   },
   errorBannerText: {
     ...typography.caption,
-    color: colors.status.error,
+    color: theme.status.error,
     marginLeft: spacing.sm,
   },
   emptyContainer: {
@@ -409,20 +415,20 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     ...typography.caption,
-    color: colors.text.muted,
+    color: theme.text.muted,
     marginTop: spacing.sm,
   },
   successContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: spacing.md,
-    backgroundColor: colors.status.successBg,
+    backgroundColor: theme.status.successBg,
     padding: spacing.sm,
     borderRadius: borderRadius.sm,
   },
   successText: {
     ...typography.small,
-    color: colors.status.success,
+    color: theme.status.success,
     marginLeft: spacing.xs,
   },
 });

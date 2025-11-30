@@ -1,26 +1,37 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, borderRadius, shadows } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
+import { borderRadius } from '../theme/colors';
 
 export default function GlassCard({ children, style, gradient = false }) {
+  const { theme, isDark } = useTheme();
+  
+  const cardShadow = {
+    shadowColor: isDark ? '#000' : '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: isDark ? 0.3 : 0.1,
+    shadowRadius: 12,
+    elevation: 8,
+  };
+
   if (gradient) {
     return (
       <LinearGradient
-        colors={colors.gradients.card}
-        style={[styles.card, shadows.card, style]}
+        colors={theme.gradients.card}
+        style={[styles.card, cardShadow, { borderColor: theme.border.primary }, style]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
-        <View style={styles.innerGlow} />
+        <View style={[styles.innerGlow, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.5)' }]} />
         {children}
       </LinearGradient>
     );
   }
 
   return (
-    <View style={[styles.card, shadows.card, style]}>
-      <View style={styles.innerGlow} />
+    <View style={[styles.card, cardShadow, { backgroundColor: theme.background.card, borderColor: theme.border.primary }, style]}>
+      <View style={[styles.innerGlow, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.5)' }]} />
       {children}
     </View>
   );
@@ -28,10 +39,8 @@ export default function GlassCard({ children, style, gradient = false }) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.background.card,
     borderRadius: borderRadius.lg,
     borderWidth: 1,
-    borderColor: colors.border.primary,
     padding: 16,
     position: 'relative',
     overflow: 'hidden',
@@ -42,6 +51,5 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
 });

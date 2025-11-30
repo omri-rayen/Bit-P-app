@@ -70,6 +70,11 @@ export const translations = {
       language: 'LANGUE',
       selectLanguage: 'Sélectionner la langue',
       
+      // Thème
+      theme: 'THÈME',
+      lightMode: 'Clair',
+      darkMode: 'Sombre',
+      
       // À propos
       about: 'À propos',
       version: 'Version',
@@ -158,6 +163,11 @@ export const translations = {
       language: 'LANGUAGE',
       selectLanguage: 'Select language',
       
+      // Theme
+      theme: 'THEME',
+      lightMode: 'Light',
+      darkMode: 'Dark',
+      
       // About
       about: 'About',
       version: 'Version',
@@ -245,6 +255,11 @@ export const translations = {
       // Language
       language: 'اللغة',
       selectLanguage: 'اختر اللغة',
+      
+      // Theme
+      theme: 'المظهر',
+      lightMode: 'فاتح',
+      darkMode: 'داكن',
       
       // About
       about: 'حول',
