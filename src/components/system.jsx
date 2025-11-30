@@ -47,19 +47,6 @@ export default function System() {
             </View>
             <Text style={styles.label}>NOM DU SYSTÈME</Text>
             <Text style={styles.name}>{sysName ?? 'Système Inconnu'}</Text>
-            
-            {/* Decorative elements */}
-            <View style={styles.statsRow}>
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>99.9%</Text>
-                <Text style={styles.statLabel}>Uptime</Text>
-              </View>
-              <View style={styles.divider} />
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>Actif</Text>
-                <Text style={styles.statLabel}>Status</Text>
-              </View>
-            </View>
           </View>
         )}
       </View>
@@ -139,33 +126,5 @@ const styles = StyleSheet.create({
     ...typography.h2,
     color: colors.text.primary,
     textAlign: 'center',
-    marginBottom: spacing.lg,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: colors.border.secondary,
-  },
-  statItem: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  statValue: {
-    ...typography.h3,
-    color: colors.primary,
-  },
-  statLabel: {
-    ...typography.small,
-    color: colors.text.muted,
-    marginTop: spacing.xs,
-  },
-  divider: {
-    width: 1,
-    height: 40,
-    backgroundColor: colors.border.secondary,
   },
 });

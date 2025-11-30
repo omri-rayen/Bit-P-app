@@ -3,6 +3,7 @@ import React from 'react';
 import { StyleSheet, Text, View, ActivityIndicator, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SystemMode from '../components/systemMode';
+import SystemNameEditor from '../components/SystemNameEditor';
 import useSystemMode from '../hooks/useSystemMode';
 import Header from '../components/Header';
 import GradientBackground from '../components/GradientBackground';
@@ -35,6 +36,9 @@ export default function SettingsScreen () {
                             <Text style={styles.errorText}>Erreur: {error}</Text>
                         </GlassCard>
                     )}
+                    
+                    {/* Éditeur du nom du système */}
+                    <SystemNameEditor />
                     
                     {isArmed !== null && <SystemMode initialIsArmed={isArmed} />}
                     

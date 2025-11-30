@@ -4,11 +4,15 @@ import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native
 import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import GlassCard from './GlassCard';
+import useMQTT from '../hooks/useMQTT';
 import { colors, typography, spacing, borderRadius, shadows } from '../theme/colors';
+
+const MQTT_TOPIC_SET_MODE = 'system/cmd/setMode';
 
 export default function SystemMode({ initialIsArmed = true }) {
   const [isArmed, setIsArmed] = useState(Boolean(initialIsArmed));
   const [pulseAnim] = useState(new Animated.Value(1));
+  const { isConnected, publish } = useMQTT();
 
   useEffect(() => {
     setIsArmed(Boolean(initialIsArmed));
@@ -36,7 +40,20 @@ export default function SystemMode({ initialIsArmed = true }) {
     }
   }, [isArmed]);
 
-  const toggleSwitch = () => setIsArmed(previousState => !previousState);
+  // Fonction pour changer le mode et publier sur MQTT
+  const setMode = (newMode) => {
+    setIsArmed(newMode);
+    
+    // Publier le nouveau mode sur MQTT
+    const payload = { isArmed: newMode };
+    const success = publish(MQTT_TOPIC_SET_MODE, payload);
+    
+    if (success) {
+      console.log(`[SystemMode] Mode publié: ${newMode ? 'Armé' : 'Désarmé'}`);
+    } else {
+      console.warn('[SystemMode] Échec de publication MQTT - non connecté');
+    }
+  };
 
   return (
     <GlassCard style={styles.container} gradient>
@@ -48,6 +65,8 @@ export default function SystemMode({ initialIsArmed = true }) {
           color={colors.text.secondary} 
         />
         <Text style={styles.headerTitle}>MODE SYSTÈME</Text>
+        {/* Indicateur de connexion MQTT */}
+        <View style={[styles.mqttIndicator, isConnected ? styles.mqttConnected : styles.mqttDisconnected]} />
       </View>
 
       {/* Status Display */}
@@ -87,7 +106,7 @@ export default function SystemMode({ initialIsArmed = true }) {
       <View style={styles.toggleContainer}>
         <TouchableOpacity
           style={[styles.toggleButton, !isArmed && styles.activeButton]}
-          onPress={() => setIsArmed(false)}
+          onPress={() => setMode(false)}
           activeOpacity={0.7}
         >
           <View style={[styles.buttonInner, !isArmed && styles.disarmedButtonActive]}>
@@ -104,7 +123,7 @@ export default function SystemMode({ initialIsArmed = true }) {
 
         <TouchableOpacity
           style={[styles.toggleButton, isArmed && styles.activeButton]}
-          onPress={() => setIsArmed(true)}
+          onPress={() => setMode(true)}
           activeOpacity={0.7}
         >
           {isArmed ? (
@@ -144,6 +163,20 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
     fontWeight: '600',
     marginLeft: spacing.sm,
+    flex: 1,
+  },
+  mqttIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  mqttConnected: {
+    backgroundColor: colors.status.success,
+    ...shadows.glow,
+    shadowColor: colors.status.success,
+  },
+  mqttDisconnected: {
+    backgroundColor: colors.status.error,
   },
   statusContainer: {
     alignItems: 'center',
