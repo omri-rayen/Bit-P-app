@@ -14,18 +14,20 @@ import Log from '../components/log';
 import useLogs from '../hooks/useLogs';
 import Header from '../components/Header';
 import GradientBackground from '../components/GradientBackground';
+import { useLanguage } from '../i18n/LanguageContext';
 import { colors, typography, spacing, borderRadius, shadows } from '../theme/colors';
 
 export default function SystemScreen() {
   const { logs, loading, error, loadMore, hasMore } = useLogs(6);
   const insets = useSafeAreaInsets();
+  const { t } = useLanguage();
 
   return (
     <GradientBackground>
       <View style={styles.container}>
         <Header 
-          title="Journaux" 
-          subtitle="Historique des événements système"
+          title={t('system.logsTitle')} 
+          subtitle={t('system.logsSubtitle')}
           loading={loading}
         />
 
@@ -57,7 +59,7 @@ export default function SystemScreen() {
               !loading && !error ? (
                 <View style={styles.emptyContainer}>
                   <Ionicons name="document-text-outline" size={48} color={colors.text.muted} />
-                  <Text style={styles.emptyText}>Aucun journal disponible</Text>
+                  <Text style={styles.emptyText}>{t('system.noLogs')}</Text>
                 </View>
               ) : null
             }
@@ -69,12 +71,12 @@ export default function SystemScreen() {
           {loading ? (
             <View style={styles.loadingButton}>
               <ActivityIndicator size="small" color={colors.primary} />
-              <Text style={styles.loadingText}>Chargement...</Text>
+              <Text style={styles.loadingText}>{t('common.loading')}</Text>
             </View>
           ) : hasMore ? (
             <TouchableOpacity 
               onPress={loadMore} 
-              accessibilityLabel="Charger plus"
+              accessibilityLabel={t('system.loadMore')}
               activeOpacity={0.8}
             >
               <LinearGradient
@@ -84,13 +86,13 @@ export default function SystemScreen() {
                 style={styles.loadMoreButton}
               >
                 <Ionicons name="refresh-outline" size={18} color={colors.text.primary} />
-                <Text style={styles.buttonText}>Charger plus</Text>
+                <Text style={styles.buttonText}>{t('system.loadMore')}</Text>
               </LinearGradient>
             </TouchableOpacity>
           ) : (
             <View style={styles.noMoreContainer}>
               <View style={styles.noMoreLine} />
-              <Text style={styles.noMoreText}>Fin des journaux</Text>
+              <Text style={styles.noMoreText}>{t('system.endOfLogs')}</Text>
               <View style={styles.noMoreLine} />
             </View>
           )}

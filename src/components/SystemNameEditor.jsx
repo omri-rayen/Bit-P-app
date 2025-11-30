@@ -13,12 +13,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import GlassCard from './GlassCard';
 import useSystemName from '../hooks/useSystemName';
+import { useLanguage } from '../i18n/LanguageContext';
 import { colors, typography, spacing, borderRadius, shadows } from '../theme/colors';
 
 const API_URL = 'https://bit-p-server.up.railway.app/api/sysName';
 
 export default function SystemNameEditor() {
   const { sysName, loading: loadingName, error: fetchError, refresh } = useSystemName();
+  const { t } = useLanguage();
   const [newName, setNewName] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -33,7 +35,7 @@ export default function SystemNameEditor() {
 
   const handleSave = async () => {
     if (!newName.trim()) {
-      setError('Le nom ne peut pas être vide');
+      setError(t('settings.emptyNameError'));
       return;
     }
 
@@ -57,17 +59,16 @@ export default function SystemNameEditor() {
       });
 
       if (!response.ok) {
-        throw new Error(`Erreur HTTP ${response.status}`);
+        throw new Error(`${t('common.error')} HTTP ${response.status}`);
       }
 
       setSuccess(true);
       setIsEditing(false);
-      refresh(); // Rafraîchir le nom depuis l'API
+      refresh();
       
-      // Masquer le message de succès après 3 secondes
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
-      setError(err.message || 'Échec de la mise à jour');
+      setError(err.message || t('settings.updateFailed'));
     } finally {
       setSaving(false);
     }
@@ -94,14 +95,14 @@ export default function SystemNameEditor() {
             <Ionicons name="pencil-outline" size={20} color={colors.text.primary} />
           </LinearGradient>
         </View>
-        <Text style={styles.headerTitle}>NOM DU SYSTÈME</Text>
+        <Text style={styles.headerTitle}>{t('settings.systemNameTitle')}</Text>
       </View>
 
       {/* Contenu */}
       {loadingName ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="small" color={colors.primary} />
-          <Text style={styles.loadingText}>Chargement...</Text>
+          <Text style={styles.loadingText}>{t('common.loading')}</Text>
         </View>
       ) : (
         <View style={styles.content}>
@@ -112,7 +113,7 @@ export default function SystemNameEditor() {
                   style={styles.input}
                   value={newName}
                   onChangeText={setNewName}
-                  placeholder="Entrez le nouveau nom"
+                  placeholder={t('settings.enterNewName')}
                   placeholderTextColor={colors.text.muted}
                   autoFocus
                   selectTextOnFocus
@@ -127,7 +128,7 @@ export default function SystemNameEditor() {
                   disabled={saving}
                 >
                   <Ionicons name="close" size={18} color={colors.text.muted} />
-                  <Text style={styles.cancelButtonText}>Annuler</Text>
+                  <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity 
@@ -146,7 +147,7 @@ export default function SystemNameEditor() {
                     ) : (
                       <>
                         <Ionicons name="checkmark" size={18} color={colors.text.primary} />
-                        <Text style={styles.saveButtonText}>Enregistrer</Text>
+                        <Text style={styles.saveButtonText}>{t('common.save')}</Text>
                       </>
                     )}
                   </LinearGradient>
@@ -160,12 +161,12 @@ export default function SystemNameEditor() {
               activeOpacity={0.7}
             >
               <View style={styles.nameRow}>
-                <Text style={styles.currentName}>{sysName || 'Non défini'}</Text>
+                <Text style={styles.currentName}>{sysName || t('settings.notDefined')}</Text>
                 <View style={styles.editIcon}>
                   <Ionicons name="create-outline" size={18} color={colors.primary} />
                 </View>
               </View>
-              <Text style={styles.hint}>Appuyez pour modifier</Text>
+              <Text style={styles.hint}>{t('settings.tapToEdit')}</Text>
             </TouchableOpacity>
           )}
 
@@ -180,7 +181,7 @@ export default function SystemNameEditor() {
           {success && (
             <View style={styles.successContainer}>
               <Ionicons name="checkmark-circle" size={16} color={colors.status.success} />
-              <Text style={styles.successText}>Nom mis à jour avec succès</Text>
+              <Text style={styles.successText}>{t('settings.nameUpdated')}</Text>
             </View>
           )}
 

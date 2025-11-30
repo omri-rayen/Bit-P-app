@@ -4,10 +4,12 @@ import System from '../components/system';
 import Device from '../components/device';
 import Header from '../components/Header';
 import GradientBackground from '../components/GradientBackground';
+import { useLanguage } from '../i18n/LanguageContext';
 import { spacing } from '../theme/colors';
 
 export default function HomeScreen () {
     const insets = useSafeAreaInsets();
+    const { t } = useLanguage();
 
     return (
         <GradientBackground>
@@ -20,8 +22,8 @@ export default function HomeScreen () {
                 showsVerticalScrollIndicator={false}
             >
                 <Header 
-                    title="Tableau de Bord" 
-                    subtitle="Vue d'ensemble du système"
+                    title={t('home.title')} 
+                    subtitle={t('home.subtitle')}
                 />
                 <View style={styles.cardsContainer}>
                     <System />

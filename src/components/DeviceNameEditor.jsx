@@ -14,50 +14,52 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import GlassCard from './GlassCard';
 import useDevices from '../hooks/useDevices';
+import { useLanguage } from '../i18n/LanguageContext';
 import { colors, typography, spacing, borderRadius, shadows } from '../theme/colors';
 
 const API_URL = 'https://bit-p-server.up.railway.app/api/dName';
 
 // Configuration des icônes par type d'appareil
-const deviceConfig = {
+const getDeviceConfig = (t) => ({
   windowSensor: {
     icon: 'apps-outline',
-    label: 'Capteur Fenêtre',
+    label: t('devices.windowSensor'),
     gradient: ['#3B82F6', '#1D4ED8'],
   },
   motionSensor: {
     icon: 'walk-outline',
-    label: 'Capteur Mouvement',
+    label: t('devices.motionSensor'),
     gradient: ['#8B5CF6', '#6D28D9'],
   },
   doorSensor: {
     icon: 'enter-outline',
-    label: 'Capteur Porte',
+    label: t('devices.doorSensor'),
     gradient: ['#10B981', '#059669'],
   },
   camera: {
     icon: 'videocam-outline',
-    label: 'Caméra',
+    label: t('devices.camera'),
     gradient: ['#F59E0B', '#D97706'],
   },
   default: {
     icon: 'hardware-chip-outline',
-    label: 'Appareil',
+    label: t('devices.device'),
     gradient: colors.gradients.secondary,
   },
-};
+});
 
-function DeviceEditItem({ device, onRename }) {
+function DeviceEditItem({ device, onRename, t }) {
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState(device.dName);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
+  const deviceConfig = getDeviceConfig(t);
   const config = deviceConfig[device.dType] || deviceConfig.default;
 
   const handleSave = async () => {
     if (!newName.trim()) {
-      setError('Le nom ne peut pas être vide');
+      setError(t('settings.emptyNameError'));
       return;
     }
 
@@ -83,13 +85,13 @@ function DeviceEditItem({ device, onRename }) {
       });
 
       if (!response.ok) {
-        throw new Error(`Erreur HTTP ${response.status}`);
+        throw new Error(`${t('common.error')} HTTP ${response.status}`);
       }
 
       setIsEditing(false);
-      onRename(); // Rafraîchir la liste des appareils
+      onRename();
     } catch (err) {
-      setError(err.message || 'Échec de la mise à jour');
+      setError(err.message || t('settings.updateFailed'));
     } finally {
       setSaving(false);
     }
@@ -137,7 +139,7 @@ function DeviceEditItem({ device, onRename }) {
             style={styles.input}
             value={newName}
             onChangeText={setNewName}
-            placeholder="Nouveau nom"
+            placeholder={t('settings.newName')}
             placeholderTextColor={colors.text.muted}
             autoFocus
             selectTextOnFocus
@@ -186,11 +188,12 @@ function DeviceEditItem({ device, onRename }) {
 
 export default function DeviceNameEditor() {
   const { devices, loading, error, refresh } = useDevices();
+  const { t } = useLanguage();
   const [successMessage, setSuccessMessage] = useState(null);
 
   const handleRename = () => {
     refresh();
-    setSuccessMessage('Nom de l\'appareil mis à jour');
+    setSuccessMessage(t('settings.deviceNameUpdated'));
     setTimeout(() => setSuccessMessage(null), 3000);
   };
 
@@ -209,9 +212,9 @@ export default function DeviceNameEditor() {
           </LinearGradient>
         </View>
         <View style={styles.headerTextContainer}>
-          <Text style={styles.headerTitle}>APPAREILS</Text>
+          <Text style={styles.headerTitle}>{t('devices.title')}</Text>
           {devices && devices.length > 0 && (
-            <Text style={styles.deviceCount}>{devices.length} appareil{devices.length > 1 ? 's' : ''}</Text>
+            <Text style={styles.deviceCount}>{devices.length} {t('devices.device')}{devices.length > 1 ? 's' : ''}</Text>
           )}
         </View>
       </View>
@@ -220,7 +223,7 @@ export default function DeviceNameEditor() {
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="small" color={colors.primary} />
-          <Text style={styles.loadingText}>Chargement...</Text>
+          <Text style={styles.loadingText}>{t('common.loading')}</Text>
         </View>
       ) : error ? (
         <View style={styles.errorBanner}>
@@ -234,13 +237,14 @@ export default function DeviceNameEditor() {
               key={`${device.dName}-${index}`} 
               device={device} 
               onRename={handleRename}
+              t={t}
             />
           ))}
         </View>
       ) : (
         <View style={styles.emptyContainer}>
           <Ionicons name="cube-outline" size={32} color={colors.text.muted} />
-          <Text style={styles.emptyText}>Aucun appareil trouvé</Text>
+          <Text style={styles.emptyText}>{t('devices.noDevices')}</Text>
         </View>
       )}
 

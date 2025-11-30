@@ -3,18 +3,20 @@ import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import useSystemName from '../hooks/useSystemName';
+import { useLanguage } from '../i18n/LanguageContext';
 import GlassCard from './GlassCard';
 import { colors, typography, spacing, borderRadius, shadows } from '../theme/colors';
 
 export default function System() {
   const { sysName, loading, error } = useSystemName();
+  const { t } = useLanguage();
 
   return (
     <GlassCard style={styles.container} gradient>
       {/* Status indicator */}
       <View style={styles.statusRow}>
         <View style={styles.statusDot} />
-        <Text style={styles.statusText}>SYSTÈME ACTIF</Text>
+        <Text style={styles.statusText}>{t('system.active')}</Text>
       </View>
 
       {/* Main content */}
@@ -22,7 +24,7 @@ export default function System() {
         {loading && (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={colors.primary} />
-            <Text style={styles.loadingText}>Connexion...</Text>
+            <Text style={styles.loadingText}>{t('common.connecting')}</Text>
           </View>
         )}
 
@@ -45,8 +47,8 @@ export default function System() {
                 <Ionicons name="shield-checkmark" size={28} color={colors.text.primary} />
               </LinearGradient>
             </View>
-            <Text style={styles.label}>NOM DU SYSTÈME</Text>
-            <Text style={styles.name}>{sysName ?? 'Système Inconnu'}</Text>
+            <Text style={styles.label}>{t('system.systemName')}</Text>
+            <Text style={styles.name}>{sysName ?? t('system.unknown')}</Text>
           </View>
         )}
       </View>

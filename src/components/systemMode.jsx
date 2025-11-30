@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import GlassCard from './GlassCard';
 import useMQTT from '../hooks/useMQTT';
+import { useLanguage } from '../i18n/LanguageContext';
 import { colors, typography, spacing, borderRadius, shadows } from '../theme/colors';
 
 const MQTT_TOPIC_SET_MODE = 'system/cmd/setMode';
@@ -13,6 +14,7 @@ export default function SystemMode({ initialIsArmed = true }) {
   const [isArmed, setIsArmed] = useState(Boolean(initialIsArmed));
   const [pulseAnim] = useState(new Animated.Value(1));
   const { isConnected, publish } = useMQTT();
+  const { t } = useLanguage();
 
   useEffect(() => {
     setIsArmed(Boolean(initialIsArmed));
@@ -64,7 +66,7 @@ export default function SystemMode({ initialIsArmed = true }) {
           size={20} 
           color={colors.text.secondary} 
         />
-        <Text style={styles.headerTitle}>MODE SYSTÈME</Text>
+        <Text style={styles.headerTitle}>{t('mode.title')}</Text>
         {/* Indicateur de connexion MQTT */}
         <View style={[styles.mqttIndicator, isConnected ? styles.mqttConnected : styles.mqttDisconnected]} />
       </View>
@@ -93,12 +95,12 @@ export default function SystemMode({ initialIsArmed = true }) {
         </Animated.View>
         
         <Text style={[styles.statusText, isArmed ? styles.armedText : styles.disarmedText]}>
-          {isArmed ? 'ARMÉ' : 'DÉSARMÉ'}
+          {isArmed ? t('mode.armed') : t('mode.disarmed')}
         </Text>
         <Text style={styles.statusDescription}>
           {isArmed 
-            ? 'Le système est actif et surveille votre propriété' 
-            : 'Le système est en veille - surveillance désactivée'}
+            ? t('mode.armedDesc') 
+            : t('mode.disarmedDesc')}
         </Text>
       </View>
 
@@ -116,7 +118,7 @@ export default function SystemMode({ initialIsArmed = true }) {
               color={!isArmed ? colors.text.primary : colors.text.muted} 
             />
             <Text style={[styles.buttonText, !isArmed && styles.activeButtonText]}>
-              Désarmer
+              {t('mode.disarm')}
             </Text>
           </View>
         </TouchableOpacity>
@@ -134,12 +136,12 @@ export default function SystemMode({ initialIsArmed = true }) {
               end={{ x: 1, y: 0 }}
             >
               <Ionicons name="lock-closed" size={20} color={colors.text.primary} />
-              <Text style={[styles.buttonText, styles.activeButtonText]}>Armer</Text>
+              <Text style={[styles.buttonText, styles.activeButtonText]}>{t('mode.arm')}</Text>
             </LinearGradient>
           ) : (
             <View style={styles.buttonInner}>
               <Ionicons name="lock-closed-outline" size={20} color={colors.text.muted} />
-              <Text style={styles.buttonText}>Armer</Text>
+              <Text style={styles.buttonText}>{t('mode.arm')}</Text>
             </View>
           )}
         </TouchableOpacity>

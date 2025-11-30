@@ -3,39 +3,41 @@ import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-nat
 import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import useDevices from '../hooks/useDevices';
+import { useLanguage } from '../i18n/LanguageContext';
 import GlassCard from './GlassCard';
 import { colors, typography, spacing, shadows, borderRadius } from '../theme/colors';
 
 // Mapping des types d'appareils vers des icônes et couleurs
-const deviceConfig = {
+const getDeviceConfig = (t) => ({
   windowSensor: {
     icon: 'apps-outline',
-    label: 'Capteur Fenêtre',
+    label: t('devices.windowSensor'),
     gradient: ['#3B82F6', '#1D4ED8'],
   },
   motionSensor: {
     icon: 'walk-outline',
-    label: 'Capteur Mouvement',
+    label: t('devices.motionSensor'),
     gradient: ['#8B5CF6', '#6D28D9'],
   },
   doorSensor: {
     icon: 'enter-outline',
-    label: 'Capteur Porte',
+    label: t('devices.doorSensor'),
     gradient: ['#10B981', '#059669'],
   },
   camera: {
     icon: 'videocam-outline',
-    label: 'Caméra',
+    label: t('devices.camera'),
     gradient: ['#F59E0B', '#D97706'],
   },
   default: {
     icon: 'hardware-chip-outline',
-    label: 'Appareil',
+    label: t('devices.device'),
     gradient: colors.gradients.secondary,
   },
-};
+});
 
-function DeviceCard({ device, index }) {
+function DeviceCard({ device, index, t }) {
+  const deviceConfig = getDeviceConfig(t);
   const config = deviceConfig[device.dType] || deviceConfig.default;
 
   return (
@@ -63,6 +65,7 @@ function DeviceCard({ device, index }) {
 
 export default function Device() {
   const { devices, loading, error } = useDevices();
+  const { t } = useLanguage();
 
   return (
     <GlassCard style={styles.container}>
@@ -79,9 +82,9 @@ export default function Device() {
           </LinearGradient>
         </View>
         <View style={styles.headerTextContainer}>
-          <Text style={styles.headerTitle}>APPAREILS CONNECTÉS</Text>
+          <Text style={styles.headerTitle}>{t('devices.connectedDevices')}</Text>
           {devices && devices.length > 0 && (
-            <Text style={styles.deviceCount}>{devices.length} appareil{devices.length > 1 ? 's' : ''}</Text>
+            <Text style={styles.deviceCount}>{devices.length} {t('devices.device')}{devices.length > 1 ? 's' : ''}</Text>
           )}
         </View>
       </View>
@@ -89,7 +92,7 @@ export default function Device() {
       {loading && (
         <View style={styles.centerContent}>
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={styles.loadingText}>Recherche d'appareils...</Text>
+          <Text style={styles.loadingText}>{t('devices.searching')}</Text>
         </View>
       )}
 
@@ -105,7 +108,7 @@ export default function Device() {
       {!loading && !error && devices && devices.length > 0 && (
         <View style={styles.devicesList}>
           {devices.map((device, index) => (
-            <DeviceCard key={`${device.dName}-${index}`} device={device} index={index} />
+            <DeviceCard key={`${device.dName}-${index}`} device={device} index={index} t={t} />
           ))}
         </View>
       )}
@@ -113,7 +116,7 @@ export default function Device() {
       {!loading && !error && (!devices || devices.length === 0) && (
         <View style={styles.centerContent}>
           <Ionicons name="search-outline" size={40} color={colors.text.muted} />
-          <Text style={styles.placeholder}>Aucun appareil disponible</Text>
+          <Text style={styles.placeholder}>{t('devices.noDevices')}</Text>
         </View>
       )}
     </GlassCard>

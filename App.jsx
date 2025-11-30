@@ -8,6 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import HomeScreen from './src/screens/HomeScreen';
 import SystemScreen from './src/screens/SystemScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
+import { LanguageProvider, useLanguage } from './src/i18n/LanguageContext';
 import { colors, borderRadius, shadows } from './src/theme/colors';
 
 const Tab = createBottomTabNavigator();
@@ -28,50 +29,63 @@ function TabBarIcon({ name, color, focused }) {
   );
 }
 
+function AppNavigator() {
+  const { t } = useLanguage();
+  
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: colors.tabBar.active,
+        tabBarInactiveTintColor: colors.tabBar.inactive,
+        tabBarStyle: styles.tabBar,
+        tabBarLabelStyle: styles.tabBarLabel,
+        tabBarItemStyle: styles.tabBarItem,
+      }}
+    >
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          tabBarLabel: t('nav.home'),
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? "home" : "home-outline"} color={color} focused={focused} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="System"
+        component={SystemScreen}
+        options={{
+          tabBarLabel: t('nav.system'),
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? "layers" : "layers-outline"} color={color} focused={focused} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          tabBarLabel: t('nav.settings'),
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? "settings" : "settings-outline"} color={color} focused={focused} />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
+
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-        <Tab.Navigator
-          screenOptions={{
-            headerShown: false,
-            tabBarActiveTintColor: colors.tabBar.active,
-            tabBarInactiveTintColor: colors.tabBar.inactive,
-            tabBarStyle: styles.tabBar,
-            tabBarLabelStyle: styles.tabBarLabel,
-            tabBarItemStyle: styles.tabBarItem,
-          }}
-        >
-          <Tab.Screen
-            name="Accueil"
-            component={HomeScreen}
-            options={{
-              tabBarIcon: ({ color, focused }) => (
-                <TabBarIcon name={focused ? "home" : "home-outline"} color={color} focused={focused} />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="Système"
-            component={SystemScreen}
-            options={{
-              tabBarIcon: ({ color, focused }) => (
-                <TabBarIcon name={focused ? "layers" : "layers-outline"} color={color} focused={focused} />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="Paramètres"
-            component={SettingsScreen}
-            options={{
-              tabBarIcon: ({ color, focused }) => (
-                <TabBarIcon name={focused ? "settings" : "settings-outline"} color={color} focused={focused} />
-              ),
-            }}
-          />
-        </Tab.Navigator>
-      </NavigationContainer>
-    </SafeAreaProvider>
+    <LanguageProvider>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <AppNavigator />
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </LanguageProvider>
   );
 }
 

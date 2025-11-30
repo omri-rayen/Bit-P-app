@@ -5,7 +5,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SystemMode from '../components/systemMode';
 import SystemNameEditor from '../components/SystemNameEditor';
 import DeviceNameEditor from '../components/DeviceNameEditor';
+import LanguageSelector from '../components/LanguageSelector';
 import useSystemMode from '../hooks/useSystemMode';
+import { useLanguage } from '../i18n/LanguageContext';
 import Header from '../components/Header';
 import GradientBackground from '../components/GradientBackground';
 import GlassCard from '../components/GlassCard';
@@ -13,6 +15,7 @@ import { colors, typography, spacing } from '../theme/colors';
 
 export default function SettingsScreen () {
     const { isArmed, loading, error } = useSystemMode();
+    const { t } = useLanguage();
     const insets = useSafeAreaInsets();
 
     return (
@@ -26,19 +29,22 @@ export default function SettingsScreen () {
                 showsVerticalScrollIndicator={false}
             >
                 <Header 
-                    title="Paramètres" 
-                    subtitle="Gérer les configurations du système"
+                    title={t('settings.title')} 
+                    subtitle={t('settings.subtitle')}
                     loading={loading}
                 />
                 
                 <View style={styles.content}>
                     {error && (
                         <GlassCard style={styles.errorCard}>
-                            <Text style={styles.errorText}>Erreur: {error}</Text>
+                            <Text style={styles.errorText}>{t('common.error')}: {error}</Text>
                         </GlassCard>
                     )}
                     
-                    {/* Mode système en premier */}
+                    {/* Sélecteur de langue */}
+                    <LanguageSelector />
+                    
+                    {/* Mode système */}
                     {isArmed !== null && <SystemMode initialIsArmed={isArmed} />}
                     
                     {/* Éditeur du nom du système */}
@@ -49,14 +55,14 @@ export default function SettingsScreen () {
                     
                     {/* Additional settings cards */}
                     <GlassCard style={styles.infoCard}>
-                        <Text style={styles.infoTitle}>À propos</Text>
+                        <Text style={styles.infoTitle}>{t('settings.about')}</Text>
                         <View style={styles.infoRow}>
-                            <Text style={styles.infoLabel}>Version</Text>
+                            <Text style={styles.infoLabel}>{t('settings.version')}</Text>
                             <Text style={styles.infoValue}>1.0.0</Text>
                         </View>
                         <View style={styles.divider} />
                         <View style={styles.infoRow}>
-                            <Text style={styles.infoLabel}>Dernière mise à jour</Text>
+                            <Text style={styles.infoLabel}>{t('settings.lastUpdate')}</Text>
                             <Text style={styles.infoValue}>30/11/2025</Text>
                         </View>
                     </GlassCard>
