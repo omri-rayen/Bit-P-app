@@ -1,9 +1,12 @@
 import { StyleSheet, Text, View } from 'react-native';
+import System from '../components/system';
+import Device from '../components/device';
 
 export default function HomeScreen () {
     return (
         <View style={styles.container}>
-            <Text>Home Page</Text>
+            <System />
+            <Device />
         </View>
     );
 }
