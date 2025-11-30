@@ -8,7 +8,7 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Log from '../components/log'; // adjust path if needed
+import Log from '../components/log';
 import useLogs from '../hooks/useLogs';
 
 export default function SystemScreen() {
