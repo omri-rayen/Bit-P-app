@@ -2,11 +2,16 @@ import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
 export default function Log({ origin, msg, dName, timestamp }) {
-  // choose background color based on origin
   const backgroundColor =
-    origin === 'system' ? '#DFF7E6' : origin === 'device' ? '#E8F0FF' : '#F5F5F5';
+    origin === 'system' ? '#DFF7E6' :
+    origin === 'device' ? '#E8F0FF' :
+    '#F5F5F5';
 
-  // safe timestamp formatting (accepts number or string)
+  const borderColor =
+    origin === 'system' ? '#22c55e' :        // green border
+    origin === 'device' ? '#3b82f6' :        // blue border
+    '#94a3b8';                               // grey border
+
   const formattedTime = (() => {
     if (!timestamp && timestamp !== 0) return '';
     try {
@@ -21,7 +26,7 @@ export default function Log({ origin, msg, dName, timestamp }) {
   })();
 
   return (
-    <View style={[styles.wrapper, { backgroundColor }]}>
+    <View style={[styles.wrapper, { backgroundColor, borderColor }]}>
       <Text style={styles.msg} numberOfLines={0}>{msg}</Text>
       {dName ? <Text style={styles.dname}>{dName}</Text> : null}
       <Text style={styles.timestamp}>{formattedTime}</Text>
@@ -33,7 +38,8 @@ const styles = StyleSheet.create({
   wrapper: {
     padding: 12,
     borderRadius: 10,
-    marginBottom: 10
+    marginBottom: 10,
+    borderWidth: 1
   },
   msg: {
     fontSize: 15,

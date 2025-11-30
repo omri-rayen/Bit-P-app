@@ -1,60 +1,50 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  ActivityIndicator
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Log from '../components/log'; // adjust path if needed
+import useLogs from '../hooks/useLogs';
 
 export default function SystemScreen() {
-  return (
-    <View style={styles.container}>
-      <View style={styles.logsContainer}>
-        {/* Example logs (rendered twice as requested) */}
-        <Log
-          origin="system"
-          msg="System rebooted successfully."
-          dName={null}
-          timestamp={Date.now() - 1000 * 60 * 5} // 5 minutes ago
-        />
+  const { logs, loading, error, loadMore, hasMore } = useLogs(6);
+  const insets = useSafeAreaInsets();
 
-        <Log
-          origin="device"
-          msg="Motion detected in living room."
-          dName="Device-42"
-          timestamp={Date.now()}
+  return (
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <View style={styles.logsContainer}>
+        {error ? <Text style={{ color: 'red' }}>{error}</Text> : null}
+
+        <FlatList
+          data={logs}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => (
+            <Log
+              origin={item.origin}
+              msg={item.msg}
+              dName={item.dName}
+              timestamp={item.timestamp}
+            />
+          )}
+          contentContainerStyle={{ paddingBottom: 12 }}
         />
-        
-        <Log
-          origin="device"
-          msg="Motion detected in living room."
-          dName="Device-42"
-          timestamp={Date.now()}
-        />
-        
-        <Log
-          origin="device"
-          msg="Motion detected in living room."
-          dName="Device-42"
-          timestamp={Date.now()}
-        />
-        
-        <Log
-          origin="device"
-          msg="Motion detected in living room."
-          dName="Device-42"
-          timestamp={Date.now()}
-        />
-        
-        <Log
-          origin="device"
-          msg="Motion detected in living room."
-          dName="Device-42"
-          timestamp={Date.now()}
-        />
-        
       </View>
 
       <View style={styles.footer}>
-        <TouchableOpacity onPress={() => { /* nothing for now */ }} accessibilityLabel="Load more">
-          <Text style={styles.buttonText}>Load more</Text>
-        </TouchableOpacity>
+        {loading ? (
+          <ActivityIndicator size="small" />
+        ) : hasMore ? (
+          <TouchableOpacity onPress={loadMore} accessibilityLabel="Load more">
+            <Text style={styles.buttonText}>Load more</Text>
+          </TouchableOpacity>
+        ) : (
+          <Text style={[styles.buttonText, { opacity: 0.6 }]}>No more logs</Text>
+        )}
       </View>
     </View>
   );
@@ -64,7 +54,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: 40
   },
   logsContainer: {
     flex: 9.5,
