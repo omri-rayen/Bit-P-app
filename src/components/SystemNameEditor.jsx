@@ -9,7 +9,6 @@ import {
   ActivityIndicator,
   Keyboard
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import GlassCard from './GlassCard';
 import useSystemName from '../hooks/useSystemName';
@@ -87,17 +86,10 @@ export default function SystemNameEditor() {
     <GlassCard style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <View style={styles.iconWrapper}>
-          <LinearGradient
-            colors={theme.gradients.primary}
-            style={styles.iconGradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-          >
-            <Ionicons name="pencil-outline" size={20} color={theme.text.primary} />
-          </LinearGradient>
+        <View style={[styles.headerIcon, { backgroundColor: theme.isDark ? theme.primary + '15' : '#FFFFFF', borderWidth: theme.isDark ? 0 : 1, borderColor: theme.border.primary }]}>
+          <Ionicons name="pencil-outline" size={18} color={theme.primary} />
         </View>
-        <Text style={[styles.headerTitle, { color: theme.text.secondary }]}>{t('settings.systemNameTitle')}</Text>
+        <Text style={[styles.headerTitle, { color: theme.text.primary }]}>{t('settings.systemNameTitle')}</Text>
       </View>
 
       {/* Contenu */}
@@ -134,31 +126,25 @@ export default function SystemNameEditor() {
                 </TouchableOpacity>
 
                 <TouchableOpacity 
+                  style={[styles.saveButton, { backgroundColor: theme.primary }]}
                   onPress={handleSave}
                   disabled={saving}
                   activeOpacity={0.8}
                 >
-                  <LinearGradient
-                    colors={theme.gradients.primary}
-                    style={styles.saveButton}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                  >
-                    {saving ? (
-                      <ActivityIndicator size="small" color={theme.text.primary} />
-                    ) : (
-                      <>
-                        <Ionicons name="checkmark" size={18} color={theme.text.primary} />
-                        <Text style={[styles.saveButtonText, { color: theme.text.primary }]}>{t('common.save')}</Text>
-                      </>
-                    )}
-                  </LinearGradient>
+                  {saving ? (
+                    <ActivityIndicator size="small" color="#FFFFFF" />
+                  ) : (
+                    <>
+                      <Ionicons name="checkmark" size={18} color="#FFFFFF" />
+                      <Text style={[styles.saveButtonText, { color: '#FFFFFF' }]}>{t('common.save')}</Text>
+                    </>
+                  )}
                 </TouchableOpacity>
               </View>
             </>
           ) : (
             <TouchableOpacity 
-              style={[styles.nameDisplay, { backgroundColor: theme.background.glass, borderColor: theme.border.primary }]} 
+              style={[styles.nameDisplay, { backgroundColor: theme.background.secondary, borderColor: theme.border.primary }]} 
               onPress={() => setIsEditing(true)}
               activeOpacity={0.7}
             >

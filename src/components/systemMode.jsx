@@ -1,7 +1,6 @@
 // components/systemMode.jsx
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import GlassCard from './GlassCard';
 import useMQTT from '../hooks/useMQTT';
@@ -13,7 +12,6 @@ const MQTT_TOPIC_SET_MODE = 'system/cmd/setMode';
 
 export default function SystemMode({ initialIsArmed = true }) {
   const [isArmed, setIsArmed] = useState(Boolean(initialIsArmed));
-  const [pulseAnim] = useState(new Animated.Value(1));
   const { isConnected, publish } = useMQTT();
   const { t } = useLanguage();
   const { theme } = useTheme();
@@ -21,28 +19,6 @@ export default function SystemMode({ initialIsArmed = true }) {
   useEffect(() => {
     setIsArmed(Boolean(initialIsArmed));
   }, [initialIsArmed]);
-
-  useEffect(() => {
-    // Pulse animation for armed state
-    if (isArmed) {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(pulseAnim, {
-            toValue: 1.1,
-            duration: 1000,
-            useNativeDriver: true,
-          }),
-          Animated.timing(pulseAnim, {
-            toValue: 1,
-            duration: 1000,
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
-    } else {
-      pulseAnim.setValue(1);
-    }
-  }, [isArmed]);
 
   // Fonction pour changer le mode et publier sur MQTT
   const setMode = (newMode) => {
@@ -60,15 +36,15 @@ export default function SystemMode({ initialIsArmed = true }) {
   };
 
   return (
-    <GlassCard style={styles.container} gradient>
+    <GlassCard style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <Ionicons 
           name="shield-checkmark" 
-          size={20} 
+          size={18} 
           color={theme.text.secondary} 
         />
-        <Text style={[styles.headerTitle, { color: theme.text.secondary }]}>{t('mode.title')}</Text>
+        <Text style={[styles.headerTitle, { color: theme.text.primary }]}>{t('mode.title')}</Text>
         {/* Indicateur de connexion MQTT */}
         <View style={[
           styles.mqttIndicator, 
@@ -78,31 +54,22 @@ export default function SystemMode({ initialIsArmed = true }) {
 
       {/* Status Display */}
       <View style={styles.statusContainer}>
-        <Animated.View 
-          style={[
-            styles.statusCircle,
-            { 
-              shadowColor: isArmed ? theme.status.success : theme.status.error,
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.5,
-              shadowRadius: 20,
-            },
-            { transform: [{ scale: pulseAnim }] }
-          ]}
-        >
-          <LinearGradient
-            colors={isArmed ? theme.gradients.accent : [theme.status.error, '#B91C1C']}
-            style={styles.statusGradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-          >
-            <Ionicons 
-              name={isArmed ? 'shield-checkmark' : 'shield-outline'} 
-              size={48} 
-              color={theme.text.primary} 
-            />
-          </LinearGradient>
-        </Animated.View>
+        <View style={[
+          styles.statusCircle,
+          { 
+            backgroundColor: theme.isDark 
+              ? (isArmed ? theme.status.success + '15' : theme.status.error + '15')
+              : '#FFFFFF',
+            borderWidth: theme.isDark ? 0 : 1,
+            borderColor: isArmed ? theme.status.success : theme.status.error
+          }
+        ]}>
+          <Ionicons 
+            name={isArmed ? 'shield-checkmark' : 'shield-outline'} 
+            size={40} 
+            color={isArmed ? theme.status.success : theme.status.error} 
+          />
+        </View>
         
         <Text style={[styles.statusText, { color: isArmed ? theme.status.success : theme.status.error }]}>
           {isArmed ? t('mode.armed') : t('mode.disarmed')}
@@ -117,49 +84,45 @@ export default function SystemMode({ initialIsArmed = true }) {
       {/* Toggle Buttons */}
       <View style={styles.toggleContainer}>
         <TouchableOpacity
-          style={styles.toggleButton}
-          onPress={() => setMode(false)}
-          activeOpacity={0.7}
-        >
-          <View style={[
-            styles.buttonInner, 
+          style={[
+            styles.toggleButton,
             { 
               backgroundColor: !isArmed ? theme.status.error : theme.background.tertiary,
               borderColor: !isArmed ? theme.status.error : theme.border.primary,
             }
-          ]}>
-            <Ionicons 
-              name="lock-open-outline" 
-              size={20} 
-              color={!isArmed ? theme.text.primary : theme.text.muted} 
-            />
-            <Text style={[styles.buttonText, { color: !isArmed ? theme.text.primary : theme.text.muted }]}>
-              {t('mode.disarm')}
-            </Text>
-          </View>
+          ]}
+          onPress={() => setMode(false)}
+          activeOpacity={0.7}
+        >
+          <Ionicons 
+            name="lock-open-outline" 
+            size={18} 
+            color={!isArmed ? '#FFFFFF' : theme.text.muted} 
+          />
+          <Text style={[styles.buttonText, { color: !isArmed ? '#FFFFFF' : theme.text.muted }]}>
+            {t('mode.disarm')}
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.toggleButton}
+          style={[
+            styles.toggleButton,
+            { 
+              backgroundColor: isArmed ? theme.status.success : theme.background.tertiary,
+              borderColor: isArmed ? theme.status.success : theme.border.primary,
+            }
+          ]}
           onPress={() => setMode(true)}
           activeOpacity={0.7}
         >
-          {isArmed ? (
-            <LinearGradient
-              colors={theme.gradients.accent}
-              style={styles.buttonInner}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            >
-              <Ionicons name="lock-closed" size={20} color={theme.text.primary} />
-              <Text style={[styles.buttonText, { color: theme.text.primary }]}>{t('mode.arm')}</Text>
-            </LinearGradient>
-          ) : (
-            <View style={[styles.buttonInner, { backgroundColor: theme.background.tertiary, borderColor: theme.border.primary }]}>
-              <Ionicons name="lock-closed-outline" size={20} color={theme.text.muted} />
-              <Text style={[styles.buttonText, { color: theme.text.muted }]}>{t('mode.arm')}</Text>
-            </View>
-          )}
+          <Ionicons 
+            name={isArmed ? 'lock-closed' : 'lock-closed-outline'} 
+            size={18} 
+            color={isArmed ? '#FFFFFF' : theme.text.muted} 
+          />
+          <Text style={[styles.buttonText, { color: isArmed ? '#FFFFFF' : theme.text.muted }]}>
+            {t('mode.arm')}
+          </Text>
         </TouchableOpacity>
       </View>
     </GlassCard>
@@ -173,11 +136,10 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: spacing.xl,
+    marginBottom: spacing.lg,
   },
   headerTitle: {
-    ...typography.small,
-    letterSpacing: 2,
+    ...typography.body,
     fontWeight: '600',
     marginLeft: spacing.sm,
     flex: 1,
@@ -189,22 +151,20 @@ const styles = StyleSheet.create({
   },
   statusContainer: {
     alignItems: 'center',
-    marginBottom: spacing.xl,
-  },
-  statusCircle: {
     marginBottom: spacing.lg,
   },
-  statusGradient: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+  statusCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: spacing.md,
   },
   statusText: {
-    ...typography.h2,
-    letterSpacing: 4,
-    marginBottom: spacing.sm,
+    ...typography.h3,
+    fontWeight: '600',
+    marginBottom: spacing.xs,
   },
   statusDescription: {
     ...typography.caption,
@@ -217,21 +177,17 @@ const styles = StyleSheet.create({
   },
   toggleButton: {
     flex: 1,
-    borderRadius: borderRadius.md,
-    overflow: 'hidden',
-  },
-  buttonInner: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.md,
+    paddingHorizontal: spacing.md,
+    borderRadius: borderRadius.sm,
     borderWidth: 1,
   },
   buttonText: {
     ...typography.body,
-    fontWeight: '600',
+    fontWeight: '500',
     marginLeft: spacing.sm,
   },
 });

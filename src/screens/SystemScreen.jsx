@@ -7,7 +7,6 @@ import {
   FlatList,
   ActivityIndicator
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Log from '../components/log';
@@ -80,16 +79,10 @@ export default function SystemScreen() {
               onPress={loadMore} 
               accessibilityLabel={t('system.loadMore')}
               activeOpacity={0.8}
+              style={[styles.loadMoreButton, { backgroundColor: theme.primary }]}
             >
-              <LinearGradient
-                colors={theme.gradients.primary}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.loadMoreButton}
-              >
-                <Ionicons name="refresh-outline" size={18} color={theme.text.primary} />
-                <Text style={[styles.buttonText, { color: theme.text.primary }]}>{t('system.loadMore')}</Text>
-              </LinearGradient>
+              <Ionicons name="refresh-outline" size={18} color="#FFFFFF" />
+              <Text style={[styles.buttonText, { color: '#FFFFFF' }]}>{t('system.loadMore')}</Text>
             </TouchableOpacity>
           ) : (
             <View style={styles.noMoreContainer}>
@@ -157,11 +150,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
     borderRadius: borderRadius.full,
-    shadowColor: '#00D9FF',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 5,
   },
   buttonText: {
     ...typography.body,

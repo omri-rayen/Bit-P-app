@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import { LinearGradient } from "expo-linear-gradient";
 import PagerView from 'react-native-pager-view';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,16 +11,11 @@ import SettingsScreen from './src/screens/SettingsScreen';
 import { LanguageProvider, useLanguage } from './src/i18n/LanguageContext';
 import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 
-function TabBarIcon({ name, color, focused, gradientColors }) {
+function TabBarIcon({ name, color, focused, activeColor }) {
   return (
     <View style={styles.iconContainer}>
       {focused && (
-        <LinearGradient
-          colors={gradientColors}
-          style={styles.activeIndicator}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-        />
+        <View style={[styles.activeIndicator, { backgroundColor: activeColor }]} />
       )}
       <Ionicons name={name} size={24} color={color} />
     </View>
@@ -63,7 +57,7 @@ function CustomTabBar({ currentPage, onTabPress, t }) {
               name={iconName} 
               color={color} 
               focused={isFocused} 
-              gradientColors={theme.gradients.primary}
+              activeColor={theme.primary}
             />
             <Text style={[styles.tabBarLabel, { color }]}>{tab.label}</Text>
           </TouchableOpacity>

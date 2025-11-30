@@ -8,7 +8,6 @@ import {
   Modal,
   Pressable
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import GlassCard from './GlassCard';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -31,15 +30,8 @@ export default function LanguageSelector() {
       <GlassCard style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
-          <View style={styles.iconWrapper}>
-            <LinearGradient
-              colors={['#F59E0B', '#D97706']}
-              style={styles.iconGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-            >
-              <Ionicons name="language-outline" size={20} color={theme.text.primary} />
-            </LinearGradient>
+          <View style={[styles.headerIcon, { backgroundColor: theme.isDark ? '#F59E0B20' : '#FFFFFF', borderWidth: theme.isDark ? 0 : 1, borderColor: theme.border.primary }]}>
+            <Ionicons name="language-outline" size={18} color="#F59E0B" />
           </View>
           <Text style={[styles.headerTitle, { color: theme.text.secondary }]}>{t('settings.language')}</Text>
         </View>
@@ -104,14 +96,9 @@ export default function LanguageSelector() {
                   </View>
                   
                   {language === lang && (
-                    <LinearGradient
-                      colors={theme.gradients.primary}
-                      style={styles.checkmark}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                    >
-                      <Ionicons name="checkmark" size={16} color={theme.text.primary} />
-                    </LinearGradient>
+                    <View style={[styles.checkmark, { backgroundColor: theme.primary }]}>
+                      <Ionicons name="checkmark" size={14} color="#FFFFFF" />
+                    </View>
                   )}
                 </TouchableOpacity>
               ))}
@@ -133,20 +120,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.md,
   },
-  iconWrapper: {
-    marginRight: spacing.md,
-  },
-  iconGradient: {
+  headerIcon: {
     width: 36,
     height: 36,
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    marginRight: spacing.md,
   },
   headerTitle: {
     ...typography.small,

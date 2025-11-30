@@ -8,9 +8,7 @@ import {
   StyleSheet, 
   ActivityIndicator,
   Keyboard,
-  Modal
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import GlassCard from './GlassCard';
 import useDevices from '../hooks/useDevices';
@@ -21,31 +19,31 @@ import { typography, spacing, borderRadius } from '../theme/colors';
 const API_URL = 'https://bit-p-server.up.railway.app/api/dName';
 
 // Configuration des icônes par type d'appareil
-const getDeviceConfig = (t, theme) => ({
+const getDeviceConfig = (t) => ({
   windowSensor: {
     icon: 'apps-outline',
     label: t('devices.windowSensor'),
-    gradient: ['#3B82F6', '#1D4ED8'],
+    color: '#3B82F6',
   },
   motionSensor: {
     icon: 'walk-outline',
     label: t('devices.motionSensor'),
-    gradient: ['#8B5CF6', '#6D28D9'],
+    color: '#8B5CF6',
   },
   doorSensor: {
     icon: 'enter-outline',
     label: t('devices.doorSensor'),
-    gradient: ['#10B981', '#059669'],
+    color: '#10B981',
   },
   camera: {
     icon: 'videocam-outline',
     label: t('devices.camera'),
-    gradient: ['#F59E0B', '#D97706'],
+    color: '#F59E0B',
   },
   default: {
     icon: 'hardware-chip-outline',
     label: t('devices.device'),
-    gradient: theme.gradients.secondary,
+    color: '#6366F1',
   },
 });
 
@@ -55,7 +53,7 @@ function DeviceEditItem({ device, onRename, t, theme }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
-  const deviceConfig = getDeviceConfig(t, theme);
+  const deviceConfig = getDeviceConfig(t);
   const config = deviceConfig[device.dType] || deviceConfig.default;
 
   const handleSave = async () => {
@@ -110,14 +108,9 @@ function DeviceEditItem({ device, onRename, t, theme }) {
   return (
     <View style={styles.deviceItem}>
       <View style={styles.deviceHeader}>
-        <LinearGradient
-          colors={config.gradient}
-          style={styles.deviceIcon}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        >
-          <Ionicons name={config.icon} size={18} color="#FFFFFF" />
-        </LinearGradient>
+        <View style={[styles.deviceIcon, { backgroundColor: config.color + '15' }]}>
+          <Ionicons name={config.icon} size={18} color={config.color} />
+        </View>
         
         <View style={styles.deviceInfo}>
           <Text style={styles.deviceType}>{config.label}</Text>
@@ -159,22 +152,16 @@ function DeviceEditItem({ device, onRename, t, theme }) {
             </TouchableOpacity>
 
             <TouchableOpacity 
+              style={[styles.saveButton, { backgroundColor: theme.primary }]}
               onPress={handleSave}
               disabled={saving}
               activeOpacity={0.8}
             >
-              <LinearGradient
-                colors={theme.gradients.primary}
-                style={styles.saveButton}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-              >
-                {saving ? (
-                  <ActivityIndicator size="small" color="#FFFFFF" />
-                ) : (
-                  <Ionicons name="checkmark" size={16} color="#FFFFFF" />
-                )}
-              </LinearGradient>
+              {saving ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <Ionicons name="checkmark" size={16} color="#FFFFFF" />
+              )}
             </TouchableOpacity>
           </View>
 
@@ -207,15 +194,8 @@ export default function DeviceNameEditor() {
     <GlassCard style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <View style={styles.iconWrapper}>
-          <LinearGradient
-            colors={theme.gradients.secondary}
-            style={styles.iconGradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-          >
-            <Ionicons name="hardware-chip-outline" size={20} color="#FFFFFF" />
-          </LinearGradient>
+        <View style={[styles.headerIcon, { backgroundColor: theme.isDark ? theme.primary + '15' : '#FFFFFF', borderWidth: theme.isDark ? 0 : 1, borderColor: theme.border.primary }]}>
+          <Ionicons name="hardware-chip-outline" size={20} color={theme.primary} />
         </View>
         <View style={styles.headerTextContainer}>
           <Text style={styles.headerTitle}>{t('devices.title')}</Text>
@@ -276,28 +256,25 @@ const getStyles = (theme) => StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.lg,
   },
-  iconWrapper: {
-    marginRight: spacing.md,
-  },
-  iconGradient: {
+  headerIcon: {
     width: 36,
     height: 36,
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
+    marginRight: spacing.md,
   },
   headerTextContainer: {
     flex: 1,
   },
   headerTitle: {
-    ...typography.small,
-    color: theme.text.secondary,
-    letterSpacing: 2,
+    ...typography.body,
+    color: theme.text.primary,
     fontWeight: '600',
   },
   deviceCount: {
     ...typography.small,
-    color: theme.primary,
+    color: theme.text.muted,
     marginTop: 2,
   },
   loadingContainer: {
@@ -315,12 +292,12 @@ const getStyles = (theme) => StyleSheet.create({
     width: '100%',
   },
   deviceItem: {
-    backgroundColor: theme.background.glass,
-    borderRadius: borderRadius.md,
+    backgroundColor: theme.background.secondary,
+    borderRadius: borderRadius.sm,
     padding: spacing.md,
     marginBottom: spacing.sm,
     borderWidth: 1,
-    borderColor: theme.border.secondary,
+    borderColor: theme.border.primary,
   },
   deviceHeader: {
     flexDirection: 'row',

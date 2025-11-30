@@ -1,65 +1,57 @@
 import React from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import useDevices from '../hooks/useDevices';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useTheme } from '../theme/ThemeContext';
 import GlassCard from './GlassCard';
-import { typography, spacing, borderRadius } from '../theme/colors';
+import { spacing, borderRadius } from '../theme/colors';
 
 // Mapping des types d'appareils vers des icônes et couleurs
-const getDeviceConfig = (t, theme) => ({
+const getDeviceConfig = (t) => ({
   windowSensor: {
     icon: 'apps-outline',
     label: t('devices.windowSensor'),
-    gradient: ['#3B82F6', '#1D4ED8'],
+    color: '#3B82F6',
   },
   motionSensor: {
     icon: 'walk-outline',
     label: t('devices.motionSensor'),
-    gradient: ['#8B5CF6', '#6D28D9'],
+    color: '#8B5CF6',
   },
   doorSensor: {
     icon: 'enter-outline',
     label: t('devices.doorSensor'),
-    gradient: ['#10B981', '#059669'],
+    color: '#10B981',
   },
   camera: {
     icon: 'videocam-outline',
     label: t('devices.camera'),
-    gradient: ['#F59E0B', '#D97706'],
+    color: '#F59E0B',
   },
   default: {
     icon: 'hardware-chip-outline',
     label: t('devices.device'),
-    gradient: theme.gradients.secondary,
+    color: '#6366F1',
   },
 });
 
-function DeviceCard({ device, index, t, theme }) {
-  const deviceConfig = getDeviceConfig(t, theme);
+function DeviceCard({ device, t, theme }) {
+  const deviceConfig = getDeviceConfig(t);
   const config = deviceConfig[device.dType] || deviceConfig.default;
 
   return (
-    <View style={[styles.deviceCard, { backgroundColor: theme.background.glass, borderColor: theme.border.secondary }]}>
-      <LinearGradient
-        colors={config.gradient}
-        style={styles.deviceIconContainer}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-      >
-        <Ionicons name={config.icon} size={22} color={theme.text.primary} />
-      </LinearGradient>
+    <View style={[styles.deviceCard, { backgroundColor: theme.background.secondary, borderColor: theme.border.primary }]}>
+      <View style={[styles.deviceIconContainer, { backgroundColor: theme.isDark ? config.color + '15' : '#FFFFFF', borderWidth: theme.isDark ? 0 : 1, borderColor: theme.border.primary }]}>
+        <Ionicons name={config.icon} size={20} color={config.color} />
+      </View>
       
       <View style={styles.deviceInfo}>
         <Text style={[styles.deviceName, { color: theme.text.primary }]}>{device.dName}</Text>
         <Text style={[styles.deviceType, { color: theme.text.muted }]}>{config.label}</Text>
       </View>
       
-      <View style={styles.statusIndicator}>
-        <View style={[styles.statusDot, { backgroundColor: theme.status.success, shadowColor: theme.status.success }]} />
-      </View>
+      <View style={[styles.statusDot, { backgroundColor: theme.status.success }]} />
     </View>
   );
 }
@@ -73,20 +65,13 @@ export default function Device() {
     <GlassCard style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <View style={styles.iconWrapper}>
-          <LinearGradient
-            colors={theme.gradients.secondary}
-            style={styles.iconGradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-          >
-            <Ionicons name="hardware-chip-outline" size={24} color={theme.text.primary} />
-          </LinearGradient>
+        <View style={[styles.headerIcon, { backgroundColor: theme.isDark ? theme.primary + '15' : '#FFFFFF', borderWidth: theme.isDark ? 0 : 1, borderColor: theme.border.primary }]}>
+          <Ionicons name="hardware-chip-outline" size={22} color={theme.primary} />
         </View>
         <View style={styles.headerTextContainer}>
-          <Text style={[styles.headerTitle, { color: theme.text.secondary }]}>{t('devices.connectedDevices')}</Text>
+          <Text style={[styles.headerTitle, { color: theme.text.primary }]}>{t('devices.connectedDevices')}</Text>
           {devices && devices.length > 0 && (
-            <Text style={[styles.deviceCount, { color: theme.primary }]}>{devices.length} {t('devices.device')}{devices.length > 1 ? 's' : ''}</Text>
+            <Text style={[styles.deviceCount, { color: theme.text.muted }]}>{devices.length} {t('devices.device')}{devices.length > 1 ? 's' : ''}</Text>
           )}
         </View>
       </View>
@@ -110,7 +95,7 @@ export default function Device() {
       {!loading && !error && devices && devices.length > 0 && (
         <View style={styles.devicesList}>
           {devices.map((device, index) => (
-            <DeviceCard key={`${device.dName}-${index}`} device={device} index={index} t={t} theme={theme} />
+            <DeviceCard key={`${device.dName}-${index}`} device={device} t={t} theme={theme} />
           ))}
         </View>
       )}
@@ -134,31 +119,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.lg,
   },
-  iconWrapper: {
-    marginRight: spacing.md,
-  },
-  iconGradient: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
+  headerIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    marginRight: spacing.md,
   },
   headerTextContainer: {
     flex: 1,
   },
   headerTitle: {
-    ...typography.small,
-    letterSpacing: 2,
+    fontSize: 16,
     fontWeight: '600' as const,
   },
   deviceCount: {
-    ...typography.caption,
+    fontSize: 12,
+    fontWeight: '400' as const,
     marginTop: 2,
   },
   centerContent: {
@@ -167,14 +145,16 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xl,
   },
   loadingText: {
-    ...typography.caption,
+    fontSize: 14,
+    fontWeight: '400' as const,
     marginTop: spacing.md,
   },
   errorIconWrapper: {
     marginBottom: spacing.sm,
   },
   errorText: {
-    ...typography.caption,
+    fontSize: 14,
+    fontWeight: '400' as const,
     textAlign: 'center' as const,
   },
   devicesList: {
@@ -183,15 +163,15 @@ const styles = StyleSheet.create({
   deviceCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: borderRadius.md,
+    borderRadius: borderRadius.sm,
     padding: spacing.md,
     marginBottom: spacing.sm,
     borderWidth: 1,
   },
   deviceIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
+    width: 36,
+    height: 36,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: spacing.md,
@@ -200,28 +180,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   deviceName: {
-    ...typography.body,
-    fontWeight: '600' as const,
+    fontSize: 16,
+    fontWeight: '500' as const,
   },
   deviceType: {
-    ...typography.small,
+    fontSize: 12,
+    fontWeight: '400' as const,
     marginTop: 2,
   },
-  statusIndicator: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   statusDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
-    elevation: 3,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   placeholder: {
-    ...typography.body,
+    fontSize: 16,
+    fontWeight: '400' as const,
     marginTop: spacing.md,
   },
 });

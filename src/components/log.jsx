@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useTheme } from '../theme/ThemeContext';
 import { typography, spacing, borderRadius } from '../theme/colors';
@@ -13,23 +12,20 @@ export default function Log({ origin, msg, dName, timestamp }) {
   const config = {
     system: {
       icon: 'server-outline',
-      gradient: theme.gradients.accent,
       accentColor: theme.status.success,
       bgColor: theme.status.successBg,
       label: 'SYSTÈME',
     },
     device: {
       icon: 'hardware-chip-outline',
-      gradient: theme.gradients.primary,
       accentColor: theme.status.info,
       bgColor: theme.status.infoBg,
       label: 'APPAREIL',
     },
     default: {
       icon: 'document-text-outline',
-      gradient: theme.gradients.secondary,
       accentColor: theme.text.muted,
-      bgColor: 'rgba(107, 114, 128, 0.15)',
+      bgColor: theme.background.tertiary,
       label: 'LOG',
     },
   };
@@ -56,14 +52,9 @@ export default function Log({ origin, msg, dName, timestamp }) {
   })();
 
   return (
-    <View style={[styles.wrapper, { backgroundColor: theme.background.card, borderColor: theme.border.secondary }]}>
+    <View style={[styles.wrapper, { backgroundColor: theme.background.card, borderColor: theme.border.primary }]}>
       {/* Accent line on the left */}
-      <LinearGradient
-        colors={currentConfig.gradient}
-        style={styles.accentLine}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
-      />
+      <View style={[styles.accentLine, { backgroundColor: currentConfig.accentColor }]} />
       
       <View style={styles.content}>
         {/* Header row */}
@@ -99,18 +90,13 @@ export default function Log({ origin, msg, dName, timestamp }) {
 const styles = StyleSheet.create({
   wrapper: {
     flexDirection: 'row',
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.md,
+    borderRadius: borderRadius.sm,
+    marginBottom: spacing.sm,
     borderWidth: 1,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
   accentLine: {
-    width: 4,
+    width: 3,
   },
   content: {
     flex: 1,
@@ -133,7 +119,6 @@ const styles = StyleSheet.create({
     ...typography.small,
     fontWeight: '600',
     marginLeft: spacing.xs,
-    letterSpacing: 1,
   },
   timestamp: {
     ...typography.small,
@@ -141,12 +126,11 @@ const styles = StyleSheet.create({
   msg: {
     ...typography.body,
     lineHeight: 22,
-    marginBottom: spacing.sm,
   },
   deviceRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: spacing.xs,
+    marginTop: spacing.sm,
   },
   dname: {
     ...typography.caption,

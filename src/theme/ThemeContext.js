@@ -1,31 +1,31 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Thème sombre
+// Thème sombre - Simple et professionnel
 export const darkTheme = {
   isDark: true,
   
   // Primary colors
-  primary: '#00D9FF',
-  primaryDark: '#0099CC',
-  secondary: '#7C3AED',
+  primary: '#3B82F6',
+  primaryDark: '#2563EB',
+  secondary: '#6366F1',
   accent: '#10B981',
   
   // Background colors
   background: {
-    primary: '#0A0E17',
-    secondary: '#111827',
-    tertiary: '#1F2937',
-    card: 'rgba(31, 41, 55, 0.7)',
-    glass: 'rgba(255, 255, 255, 0.05)',
+    primary: '#111827',
+    secondary: '#1F2937',
+    tertiary: '#374151',
+    card: '#1F2937',
+    glass: 'rgba(31, 41, 55, 0.8)',
   },
   
   // Text colors
   text: {
     primary: '#F9FAFB',
-    secondary: '#9CA3AF',
-    muted: '#6B7280',
-    accent: '#00D9FF',
+    secondary: '#D1D5DB',
+    muted: '#9CA3AF',
+    accent: '#3B82F6',
   },
   
   // Status colors
@@ -42,54 +42,54 @@ export const darkTheme = {
   
   // Border colors
   border: {
-    primary: 'rgba(255, 255, 255, 0.1)',
-    secondary: 'rgba(255, 255, 255, 0.05)',
-    accent: 'rgba(0, 217, 255, 0.3)',
+    primary: '#374151',
+    secondary: '#4B5563',
+    accent: '#3B82F6',
   },
   
-  // Gradient presets
+  // Simple gradients
   gradients: {
-    primary: ['#00D9FF', '#7C3AED'],
-    secondary: ['#7C3AED', '#EC4899'],
-    accent: ['#10B981', '#00D9FF'],
-    dark: ['#0A0E17', '#111827'],
-    card: ['rgba(31, 41, 55, 0.8)', 'rgba(17, 24, 39, 0.9)'],
-    background: ['#0A0E17', '#0F1520', '#141C2B'],
+    primary: ['#3B82F6', '#2563EB'],
+    secondary: ['#6366F1', '#4F46E5'],
+    accent: ['#10B981', '#059669'],
+    dark: ['#111827', '#1F2937'],
+    card: ['#1F2937', '#1F2937'],
+    background: ['#111827', '#111827', '#111827'],
   },
   
   // Tab bar
   tabBar: {
-    background: 'rgba(10, 14, 23, 0.95)',
-    active: '#00D9FF',
+    background: '#111827',
+    active: '#3B82F6',
     inactive: '#6B7280',
   },
 };
 
-// Thème clair
+// Thème clair - Simple et professionnel
 export const lightTheme = {
   isDark: false,
   
   // Primary colors
-  primary: '#0088CC',
-  primaryDark: '#006699',
-  secondary: '#6D28D9',
+  primary: '#2563EB',
+  primaryDark: '#1D4ED8',
+  secondary: '#4F46E5',
   accent: '#059669',
   
   // Background colors
   background: {
-    primary: '#F8FAFC',
-    secondary: '#F1F5F9',
-    tertiary: '#E2E8F0',
-    card: 'rgba(255, 255, 255, 0.9)',
-    glass: 'rgba(0, 0, 0, 0.03)',
+    primary: '#FFFFFF',
+    secondary: '#F9FAFB',
+    tertiary: '#F3F4F6',
+    card: '#FFFFFF',
+    glass: 'rgba(255, 255, 255, 0.9)',
   },
   
   // Text colors
   text: {
-    primary: '#1E293B',
-    secondary: '#475569',
-    muted: '#94A3B8',
-    accent: '#0088CC',
+    primary: '#111827',
+    secondary: '#4B5563',
+    muted: '#9CA3AF',
+    accent: '#2563EB',
   },
   
   // Status colors
@@ -106,26 +106,26 @@ export const lightTheme = {
   
   // Border colors
   border: {
-    primary: 'rgba(0, 0, 0, 0.1)',
-    secondary: 'rgba(0, 0, 0, 0.05)',
-    accent: 'rgba(0, 136, 204, 0.3)',
+    primary: '#E5E7EB',
+    secondary: '#D1D5DB',
+    accent: '#2563EB',
   },
   
-  // Gradient presets
+  // Simple gradients
   gradients: {
-    primary: ['#0088CC', '#6D28D9'],
-    secondary: ['#6D28D9', '#DB2777'],
-    accent: ['#059669', '#0088CC'],
-    dark: ['#F8FAFC', '#F1F5F9'],
-    card: ['rgba(255, 255, 255, 0.95)', 'rgba(241, 245, 249, 0.95)'],
-    background: ['#F8FAFC', '#F1F5F9', '#E2E8F0'],
+    primary: ['#2563EB', '#1D4ED8'],
+    secondary: ['#4F46E5', '#4338CA'],
+    accent: ['#059669', '#047857'],
+    dark: ['#FFFFFF', '#F9FAFB'],
+    card: ['#FFFFFF', '#FFFFFF'],
+    background: ['#FFFFFF', '#FFFFFF', '#FFFFFF'],
   },
   
   // Tab bar
   tabBar: {
-    background: 'rgba(248, 250, 252, 0.95)',
-    active: '#0088CC',
-    inactive: '#94A3B8',
+    background: '#FFFFFF',
+    active: '#2563EB',
+    inactive: '#9CA3AF',
   },
 };
 

@@ -1,7 +1,6 @@
 // components/ThemeToggle.jsx
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useTheme } from '../theme/ThemeContext';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -15,7 +14,7 @@ export default function ThemeToggle() {
   return (
     <GlassCard style={styles.container}>
       <View style={styles.header}>
-        <View style={[styles.iconWrapper, { backgroundColor: theme.background.tertiary }]}>
+        <View style={[styles.iconWrapper, { backgroundColor: theme.isDark ? theme.background.tertiary : '#FFFFFF', borderWidth: theme.isDark ? 0 : 1, borderColor: theme.border.primary }]}>
           <Ionicons 
             name={isDarkMode ? "moon" : "sunny"} 
             size={20} 
