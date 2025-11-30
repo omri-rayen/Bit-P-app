@@ -41,31 +41,27 @@ export default function SettingsScreen () {
                         </GlassCard>
                     )}
                     
-                    {/* Sélecteur de langue */}
-                    <LanguageSelector />
-                    
                     {/* Mode système */}
                     {isArmed !== null && <SystemMode initialIsArmed={isArmed} />}
                     
                     {/* Éditeur du nom du système */}
-                    <SystemNameEditor />
+                    <View style={styles.sectionSpacing}>
+                        <SystemNameEditor />
+                    </View>
                     
                     {/* Éditeur des noms d'appareils */}
                     <DeviceNameEditor />
                     
-                    {/* Additional settings cards */}
-                    <GlassCard style={styles.infoCard}>
-                        <Text style={styles.infoTitle}>{t('settings.about')}</Text>
-                        <View style={styles.infoRow}>
-                            <Text style={styles.infoLabel}>{t('settings.version')}</Text>
-                            <Text style={styles.infoValue}>1.0.0</Text>
-                        </View>
-                        <View style={styles.divider} />
-                        <View style={styles.infoRow}>
-                            <Text style={styles.infoLabel}>{t('settings.lastUpdate')}</Text>
-                            <Text style={styles.infoValue}>30/11/2025</Text>
-                        </View>
-                    </GlassCard>
+                    {/* Sélecteur de langue */}
+                    <View style={styles.sectionSpacing}>
+                        <LanguageSelector />
+                    </View>
+                    
+                    {/* Version de l'application - tout en bas */}
+                    <View style={styles.versionContainer}>
+                        <Text style={styles.versionText}>Bit-P App</Text>
+                        <Text style={styles.versionNumber}>v1.0.0</Text>
+                    </View>
                 </View>
             </ScrollView>
         </GradientBackground>
@@ -82,6 +78,9 @@ const styles = StyleSheet.create({
     content: {
         paddingHorizontal: spacing.lg,
     },
+    sectionSpacing: {
+        marginTop: spacing.xl,
+    },
     errorCard: {
         backgroundColor: colors.status.errorBg,
         borderColor: 'rgba(239, 68, 68, 0.3)',
@@ -91,31 +90,19 @@ const styles = StyleSheet.create({
         ...typography.caption,
         color: colors.status.error,
     },
-    infoCard: {
-        marginTop: spacing.lg,
-    },
-    infoTitle: {
-        ...typography.h3,
-        color: colors.text.primary,
-        marginBottom: spacing.md,
-    },
-    infoRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+    versionContainer: {
         alignItems: 'center',
-        paddingVertical: spacing.sm,
+        marginTop: spacing.xl * 2,
+        paddingVertical: spacing.lg,
     },
-    infoLabel: {
+    versionText: {
         ...typography.caption,
         color: colors.text.muted,
+        marginBottom: spacing.xs,
     },
-    infoValue: {
-        ...typography.caption,
-        color: colors.text.secondary,
-        fontWeight: '600',
-    },
-    divider: {
-        height: 1,
-        backgroundColor: colors.border.secondary,
+    versionNumber: {
+        ...typography.small,
+        color: colors.text.muted,
+        opacity: 0.6,
     },
 });
