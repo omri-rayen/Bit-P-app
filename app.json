@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Bit-P-app",
-    "slug": "Bit-P-app",
+    "name": "Bit-P",
+    "slug": "bit-p",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
