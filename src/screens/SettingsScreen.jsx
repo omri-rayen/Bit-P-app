@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, ActivityIndicator, ScrollView } from 'react-nat
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SystemMode from '../components/systemMode';
 import SystemNameEditor from '../components/SystemNameEditor';
+import DeviceNameEditor from '../components/DeviceNameEditor';
 import useSystemMode from '../hooks/useSystemMode';
 import Header from '../components/Header';
 import GradientBackground from '../components/GradientBackground';
@@ -37,10 +38,14 @@ export default function SettingsScreen () {
                         </GlassCard>
                     )}
                     
+                    {/* Mode système en premier */}
+                    {isArmed !== null && <SystemMode initialIsArmed={isArmed} />}
+                    
                     {/* Éditeur du nom du système */}
                     <SystemNameEditor />
                     
-                    {isArmed !== null && <SystemMode initialIsArmed={isArmed} />}
+                    {/* Éditeur des noms d'appareils */}
+                    <DeviceNameEditor />
                     
                     {/* Additional settings cards */}
                     <GlassCard style={styles.infoCard}>
