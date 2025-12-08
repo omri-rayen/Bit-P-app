@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -10,6 +10,7 @@ import {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Log from '../components/log';
+import RealtimeNotification from '../components/RealtimeNotification';
 import useLogs from '../hooks/useLogs';
 import Header from '../components/Header';
 import GradientBackground from '../components/GradientBackground';
@@ -18,14 +19,30 @@ import { useTheme } from '../theme/ThemeContext';
 import { typography, spacing, borderRadius } from '../theme/colors';
 
 export default function SystemScreen() {
-  const { logs, loading, error, loadMore, hasMore } = useLogs(6);
+  const { logs, loading, error, loadMore, hasMore, latestLog } = useLogs(6);
+  const [showNotification, setShowNotification] = useState(true);
   const insets = useSafeAreaInsets();
   const { t } = useLanguage();
   const { theme } = useTheme();
 
+  // Réafficher la notification quand un nouveau log arrive
+  useEffect(() => {
+    if (latestLog) {
+      setShowNotification(true);
+    }
+  }, [latestLog]);
+
   return (
     <GradientBackground>
       <View style={styles.container}>
+        {/* Notification en temps réel */}
+        {showNotification && latestLog && (
+          <RealtimeNotification 
+            log={latestLog}
+            onDismiss={() => setShowNotification(false)}
+          />
+        )}
+
         <Header 
           title={t('system.logsTitle')} 
           subtitle={t('system.logsSubtitle')}
@@ -49,6 +66,9 @@ export default function SystemScreen() {
                 msg={item.msg}
                 dName={item.dName}
                 timestamp={item.timestamp}
+                deviceId={item.deviceId}
+                isOpen={item.isOpen}
+                isRealtime={item.isRealtime}
               />
             )}
             contentContainerStyle={[

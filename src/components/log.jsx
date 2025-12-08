@@ -4,10 +4,14 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useTheme } from '../theme/ThemeContext';
 import { typography, spacing, borderRadius } from '../theme/colors';
 
-export default function Log({ origin, msg, dName, timestamp }) {
+export default function Log({ origin, msg, dName, timestamp, deviceId, isOpen, isRealtime }) {
   const { theme } = useTheme();
   const isSystem = origin === 'system';
   const isDevice = origin === 'device';
+  
+  // Déterminer le type de capteur basé sur deviceId
+  const isDoorSensor = deviceId === 'd239';
+  const isMotionDetector = deviceId === 'd254';
 
   const config = {
     system: {
@@ -82,6 +86,44 @@ export default function Log({ origin, msg, dName, timestamp }) {
             <Text style={[styles.dname, { color: theme.text.secondary }]}>{dName}</Text>
           </View>
         )}
+
+        {/* Statut spécifique pour door sensor */}
+        {isDoorSensor && isOpen !== null && (
+          <View style={styles.statusRow}>
+            <Ionicons 
+              name={isOpen ? "lock-open" : "lock-closed"} 
+              size={14} 
+              color={isOpen ? theme.status.warning : theme.status.success} 
+            />
+            <Text style={[styles.statusText, { 
+              color: isOpen ? theme.status.warning : theme.status.success 
+            }]}>
+              {isOpen ? 'Porte ouverte' : 'Porte fermée'}
+            </Text>
+          </View>
+        )}
+
+        {/* Indicateur de mouvement détecté */}
+        {isMotionDetector && (
+          <View style={styles.statusRow}>
+            <Ionicons 
+              name="walk" 
+              size={14} 
+              color={theme.status.info} 
+            />
+            <Text style={[styles.statusText, { color: theme.status.info }]}>
+              Mouvement détecté
+            </Text>
+          </View>
+        )}
+
+        {/* Badge temps réel */}
+        {isRealtime && (
+          <View style={[styles.realtimeBadge, { backgroundColor: theme.status.successBg }]}>
+            <View style={[styles.realtimeDot, { backgroundColor: theme.status.success }]} />
+            <Text style={[styles.realtimeText, { color: theme.status.success }]}>Temps réel</Text>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -135,5 +177,34 @@ const styles = StyleSheet.create({
   dname: {
     ...typography.caption,
     marginLeft: spacing.xs,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: spacing.sm,
+  },
+  statusText: {
+    ...typography.caption,
+    marginLeft: spacing.xs,
+    fontWeight: '600',
+  },
+  realtimeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.sm,
+    marginTop: spacing.sm,
+  },
+  realtimeDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: spacing.xs,
+  },
+  realtimeText: {
+    ...typography.small,
+    fontWeight: '600',
   },
 });

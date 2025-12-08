@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
+import useRealtimeLogs from './useRealtimeLogs';
 
 const API_URL = 'https://bit-p-server.up.railway.app/api/logs';
 
@@ -7,6 +8,9 @@ export default function useLogs(limit = 6) {
   const [nextCursor, setNextCursor] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  
+  // Hook pour les logs en temps réel
+  const { realtimeLogs, latestLog } = useRealtimeLogs();
 
   const fetchLogs = useCallback(async (cursor = null) => {
     try {
@@ -52,11 +56,31 @@ export default function useLogs(limit = 6) {
     fetchLogs(nextCursor);
   }, [loading, nextCursor, fetchLogs]);
 
+  // Combiner les logs de l'API avec les logs en temps réel
+  const allLogs = useMemo(() => {
+    // Fusionner les logs en temps réel avec les logs de l'API
+    // Les logs temps réel en premier (plus récents)
+    const combined = [...realtimeLogs, ...logs];
+    
+    // Supprimer les doublons basés sur l'ID
+    const uniqueLogs = combined.filter((log, index, self) =>
+      index === self.findIndex((l) => l.id === log.id)
+    );
+    
+    // Trier par timestamp (plus récent en premier)
+    return uniqueLogs.sort((a, b) => {
+      const timeA = new Date(a.timestamp).getTime();
+      const timeB = new Date(b.timestamp).getTime();
+      return timeB - timeA;
+    });
+  }, [logs, realtimeLogs]);
+
   return {
-    logs,
+    logs: allLogs,
     loading,
     error,
     loadMore,
-    hasMore: !!nextCursor
+    hasMore: !!nextCursor,
+    latestLog, // Dernier log reçu en temps réel
   };
 }
